@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 public class SchetsWin : Form
@@ -39,6 +41,8 @@ public class SchetsWin : Form
                                 , new LijnTool()
                                 , new RechthoekTool()
                                 , new VolRechthoekTool()
+                                , new CirkelTool()
+                                , new VolCirkelTool()
                                 , new TekstTool()
                                 , new GumTool()
                                 };
@@ -83,6 +87,8 @@ public class SchetsWin : Form
     {   
         ToolStripMenuItem menu = new ToolStripMenuItem("File");
         menu.MergeAction = MergeAction.MatchOnly;
+        menu.DropDownItems.Add("Opslaan...", null, this.save);
+        menu.DropDownItems.Add("Openen...", null, this.open);
         menu.DropDownItems.Add("Sluiten", null, this.afsluiten);
         menuStrip.Items.Add(menu);
     }
@@ -161,5 +167,33 @@ public class SchetsWin : Form
         foreach (string k in kleuren)
             cbb.Items.Add(k);
         cbb.SelectedIndex = 0;
+    }
+
+
+    //CHANGED
+    private void save(object sender, EventArgs e)
+    {
+        SaveFileDialog dialog = new SaveFileDialog();
+        dialog.Filter = "*png (*.png)|*.png|jpeg (*.jpeg)|*.jpeg";
+        dialog.AddExtension = true;
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            schetscontrol.schets.bitmap.Save(dialog.FileName);
+            MessageBox.Show($"{dialog.FileName} saved!");
+        }
+        
+    }
+
+    public void open(object sender, EventArgs e)
+    {
+        OpenFileDialog dialog = new OpenFileDialog();
+        dialog.Filter = "*png (*.png)|*.png|jpeg (*.jpeg)|*.jpeg";
+        dialog.AddExtension = true;
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            schetscontrol.schets.bitmap = new Bitmap(dialog.FileName);
+            schetscontrol.Invalidate();
+        }
+
     }
 }

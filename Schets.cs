@@ -4,7 +4,7 @@ using System.Drawing;
 
 public class Schets
 {
-    private Bitmap bitmap;
+    public Bitmap bitmap;
         
     public Schets()
     {

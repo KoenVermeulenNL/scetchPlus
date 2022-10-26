@@ -1,10 +1,12 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 public class SchetsEditor : Form
 {
     private MenuStrip menuStrip;
+    private SchetsWin currentSchetswin;
 
     public SchetsEditor()
     {   
@@ -32,7 +34,7 @@ public class SchetsEditor : Form
     }
     private void about(object o, EventArgs ea)
     {   
-        MessageBox.Show ( "Schets versie 2.0\n(c) UU Informatica 2022"
+        MessageBox.Show ( "Schets versie 2.0\n(c) UU Informatica 2022. Modified by Hugo & Koen."
                         , "Over \"Schets\""
                         , MessageBoxButtons.OK
                         , MessageBoxIcon.Information
@@ -43,6 +45,7 @@ public class SchetsEditor : Form
     {   
         SchetsWin s = new SchetsWin();
         s.MdiParent = this;
+        currentSchetswin = s;
         s.Show();
     }
     private void afsluiten(object sender, EventArgs e)
