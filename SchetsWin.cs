@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
+using static Schets;
 
 public class SchetsWin : Form
 {   
@@ -14,6 +15,17 @@ public class SchetsWin : Form
     Panel paneel;
     Button kleurKiezen;
     bool vast;
+
+    ISchetsTool[] tempTools = { new PenTool()
+                                , new LijnTool()
+                                , new RechthoekTool()
+                                , new VolRechthoekTool()
+                                , new CirkelTool()
+                                , new VolCirkelTool()
+                                , new TekstTool()
+                                , new GumTool()
+                                , new ObjectGumTool()
+                                };
 
     private void veranderAfmeting(object o, EventArgs ea)
     {
@@ -39,15 +51,7 @@ public class SchetsWin : Form
 
     public SchetsWin()
     {
-        ISchetsTool[] deTools = { new PenTool()         
-                                , new LijnTool()
-                                , new RechthoekTool()
-                                , new VolRechthoekTool()
-                                , new CirkelTool()
-                                , new VolCirkelTool()
-                                , new TekstTool()
-                                , new GumTool()
-                                };
+        ISchetsTool[] deTools = tempTools;
         String[] deKleuren = { "Black", "Red", "Green", "Blue", "Yellow", "Magenta", "Cyan" };
 
         this.ClientSize = new Size(700, 500);
@@ -89,8 +93,12 @@ public class SchetsWin : Form
     {   
         ToolStripMenuItem menu = new ToolStripMenuItem("File");
         menu.MergeAction = MergeAction.MatchOnly;
-        menu.DropDownItems.Add("Opslaan...", null, this.save);
-        menu.DropDownItems.Add("Openen...", null, this.open);
+        ToolStripMenuItem saveMenu = new ToolStripMenuItem("File");
+        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.save);
+        saveMenu.DropDownItems.Add("Opslaan als object...", null, this.saveObject);
+        saveMenu.DropDownItems.Add("Openen...", null, this.open);
+        saveMenu.DropDownItems.Add("Openen als object...", null, this.openObject);
+        menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { saveMenu });
         menu.DropDownItems.Add("Sluiten", null, this.afsluiten);
         menuStrip.Items.Add(menu);
     }
@@ -114,6 +122,7 @@ public class SchetsWin : Form
         ToolStripMenuItem menu = new ToolStripMenuItem("Actie");
         menu.DropDownItems.Add("Clear", null, schetscontrol.Schoon );
         menu.DropDownItems.Add("Roteer", null, schetscontrol.Roteer );
+        menu.DropDownItems.Add("Undo", null, schetscontrol.Undo);
         menu.DropDownItems.Add("Kies kleur", null, maakKleurMenu);
         menuStrip.Items.Add(menu);
     }
@@ -156,13 +165,18 @@ public class SchetsWin : Form
            
         Label penkleur = new Label(); paneel.Controls.Add(penkleur);
         penkleur.Text = "Penkleur:"; 
-        penkleur.Location = new Point(180, 3); 
+        penkleur.Location = new Point(260, 3); 
         penkleur.AutoSize = true;               
 
         kleurKiezen = new Button(); paneel.Controls.Add(kleurKiezen);
         kleurKiezen.BackColor = Color.Red;
-        kleurKiezen.Location = new Point(240, 0);
+        kleurKiezen.Location = new Point(320, 0);
         kleurKiezen.Click += maakKleurMenu;
+
+        Button undo = new Button(); paneel.Controls.Add(undo);
+        undo.Text = "Undo";
+        undo.Location = new Point(160, 0);
+        undo.Click += schetscontrol.Undo;
     }
 
     private void maakKleurMenu(object sender, EventArgs e) {
@@ -198,6 +212,79 @@ public class SchetsWin : Form
         {
             schetscontrol.schets.bitmap = new Bitmap(dialog.FileName);
             schetscontrol.Invalidate();
+        }
+
+    }
+
+    private void saveObject(object sender, EventArgs e)
+    {
+        SaveFileDialog dialog = new SaveFileDialog();
+        dialog.Filter = "Text File | *.txt";
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            string res = ""; //; = seperator between objects
+            foreach (GetekendObject obj in schetscontrol.schets.getekendeObjecten)
+            {
+                res += $"{obj.soort.ToString()}~{obj.beginpunt.X}~{obj.beginpunt.Y}~{obj.eindpunt.X}~{obj.eindpunt.Y}~{obj.kleur.ToString()};";
+            }
+            StreamWriter writer = new StreamWriter(dialog.OpenFile());
+
+            writer.Write(res);
+            writer.Dispose();
+            writer.Close();
+        }
+
+
+    }
+
+    public void openObject(object sender, EventArgs e)
+    {
+        OpenFileDialog dialog = new OpenFileDialog();
+        dialog.Filter = "Text File | *.txt";
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                // Create a StreamReader  
+                using (StreamReader reader = new StreamReader(dialog.FileName))
+                {
+                    string line;
+                    schetscontrol.schets.getekendeObjecten.Clear();
+                    // Read line by line  
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        string fullLine = line;
+                        string[] objectStrings = fullLine.Split(";");
+                        foreach (string objectString in objectStrings) {
+                            string[] objectProps = objectString.Split("~");
+                        if (objectProps.Length > 1) { 
+
+                            ISchetsTool tool = tempTools[0];
+
+                            foreach (ISchetsTool t in tempTools) {
+                                if (t.ToString() == objectProps[0]) {
+                                    tool = t;
+                                }
+                            }
+
+
+                            GetekendObject gObj = new GetekendObject(tool,
+                                new Point(Int32.Parse(objectProps[1]), Int32.Parse(objectProps[2])),
+                                new Point(Int32.Parse(objectProps[3]), Int32.Parse(objectProps[4])),
+                                Brushes.Black);
+                            
+                            schetscontrol.schets.getekendeObjecten.Add(gObj);
+                        }
+                    }
+                    }
+
+                    schetscontrol.DrawBitmapFromList();
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(exp.Message);
+            }
         }
 
     }
