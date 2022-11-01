@@ -1,17 +1,41 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 public class Schets
 {
     public Bitmap bitmap;
+    public List<GetekendObject> getekendeObjecten = new List<GetekendObject>();
         
     public Schets()
     {
         bitmap = new Bitmap(1, 1);
     }
-    public Graphics BitmapGraphics
+
+    public class GetekendObject
     {
+        public ISchetsTool soort;
+        public Point beginpunt;
+        public Point eindpunt;
+        public Brush kleur;
+        public string tekst = "";
+
+        public GetekendObject(ISchetsTool soort, Point beginpunt, Point eindpunt, Brush kleur) {
+            this.soort = soort;
+            this.beginpunt = beginpunt;
+            this.eindpunt = eindpunt;
+            this.kleur = kleur;
+        }
+
+        public virtual void LaatZien(Graphics g) {
+            
+        }
+    }
+
+    public Graphics BitmapGraphics
+    {   
         get { return Graphics.FromImage(bitmap); }
     }
     public void VeranderAfmeting(Size sz)
@@ -30,11 +54,13 @@ public class Schets
     public void Teken(Graphics gr)
     {
         gr.DrawImage(bitmap, 0, 0);
+       
     }
     public void Schoon()
     {
         Graphics gr = Graphics.FromImage(bitmap);
         gr.FillRectangle(Brushes.White, 0, 0, bitmap.Width, bitmap.Height);
+        
     }
     public void Roteer()
     {
