@@ -109,7 +109,7 @@ public class RechthoekTool : TweepuntTool
 {
     public override string ToString() { return "kader"; }
 
-    public override void Bezig(Graphics g, Point p1, Point p2)
+    public override void Bezig(Graphics g, Point p1, Point p2, Brush kleur)
     {   g.DrawRectangle(MaakPen(kwast,pengrootte), TweepuntTool.Punten2Rechthoek(p1, p2));
     }
 }
@@ -149,7 +149,7 @@ public class LijnTool : TweepuntTool
 {
     public override string ToString() { return "lijn"; }
 
-    public override void Bezig(Graphics g, Point p1, Point p2)
+    public override void Bezig(Graphics g, Point p1, Point p2, Brush kleur)
     {   g.DrawLine(MaakPen(this.kwast, pengrootte), p1, p2);
     }
 }
@@ -168,7 +168,7 @@ public class GumTool : PenTool
 {
     public override string ToString() { return "gum"; }
 
-    public override void Bezig(Graphics g, Point p1, Point p2)
+    public override void Bezig(Graphics g, Point p1, Point p2, Brush kleur)
     {   g.DrawLine(MaakPen(Brushes.White, pengrootte+2), p1, p2);
     }
 }

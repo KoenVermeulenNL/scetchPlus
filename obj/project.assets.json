@@ -8,19 +8,19 @@
     "net6.0-windows7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\koenv\\.nuget\\packages\\": {}
+    "C:\\Users\\hugok\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\koenv\\Documents\\Projects\\UU\\scetchPlus\\7.5-SchetsEditorC.csproj",
+      "projectUniqueName": "C:\\Users\\hugok\\OneDrive\\Documents\\code\\scetchPlus\\7.5-SchetsEditorC.csproj",
       "projectName": "7.5-SchetsEditorC",
-      "projectPath": "C:\\Users\\koenv\\Documents\\Projects\\UU\\scetchPlus\\7.5-SchetsEditorC.csproj",
-      "packagesPath": "C:\\Users\\koenv\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\koenv\\Documents\\Projects\\UU\\scetchPlus\\obj\\",
+      "projectPath": "C:\\Users\\hugok\\OneDrive\\Documents\\code\\scetchPlus\\7.5-SchetsEditorC.csproj",
+      "packagesPath": "C:\\Users\\hugok\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hugok\\OneDrive\\Documents\\code\\scetchPlus\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\koenv\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hugok\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -64,7 +64,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }
