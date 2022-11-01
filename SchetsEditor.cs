@@ -23,6 +23,7 @@ public class SchetsEditor : Form
     {   
         ToolStripDropDownItem menu = new ToolStripMenuItem("File");
         menu.DropDownItems.Add("Nieuw", null, this.nieuw);
+        menu.DropDownItems.Add("Openen...", null, this.open);
         menu.DropDownItems.Add("Exit", null, this.afsluiten);
         menuStrip.Items.Add(menu);
     }
@@ -51,5 +52,14 @@ public class SchetsEditor : Form
     private void afsluiten(object sender, EventArgs e)
     {   
         this.Close();
+    }
+
+    private void open(object sender, EventArgs e)
+    {
+        SchetsWin s = new SchetsWin();
+        s.MdiParent = this;
+        currentSchetswin = s;
+        s.open(sender, e);
+        s.Show();
     }
 }
