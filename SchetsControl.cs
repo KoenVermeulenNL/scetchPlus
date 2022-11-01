@@ -9,9 +9,13 @@ public class SchetsControl : UserControl
 {   
     public Schets schets;
     private Color penkleur = Color.Red;
+    private int pengrootte = 3;
 
     public Color PenKleur
     { get { return penkleur; }
+    }
+    public int PenGrootte
+    { get { return pengrootte; }
     }
     public Schets Schets
     { get { return schets;   }
@@ -55,7 +59,11 @@ public class SchetsControl : UserControl
         penkleur = kleurNaam;
     }
 
-    //CHANGED
+    public void VeranderPenGrootte(int value) {
+        pengrootte = value;
+    }
+
+        //CHANGED
     public void DrawBitmapFromList() {
         schets.Schoon();
         foreach (GetekendObject gObject in schets.getekendeObjecten)
