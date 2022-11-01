@@ -1,0 +1,50 @@
+Voor opdracht 5.3:
+    schetscontrol.cs: functie VeranderKleur
+    van:    public void VeranderKleurViaMenu(object obj, EventArgs ea)
+            {   string kleurNaam = ((ToolStripMenuItem)obj).Text;
+                penkleur = Color.FromName(kleurNaam);
+            }
+
+    naar:   public void VeranderKleur(object obj, EventArgs ea)
+            {   Color kleurNaam = ((PictureBox)obj).BackColor;
+                penkleur = kleurNaam;
+            }
+
+    schetscontrol.cs: weggehaald
+    public void VeranderKleurViaMenu(object obj, EventArgs ea)
+    {   string kleurNaam = ((ToolStripMenuItem)obj).Text;
+        penkleur = Color.FromName(kleurNaam);
+    }
+
+    SchetsWin.cs: weggehaald
+        ComboBox cbb = new ComboBox(); paneel.Controls.Add(cbb);
+        cbb.Location = new Point(240, 0); 
+        cbb.DropDownStyle = ComboBoxStyle.DropDownList; 
+        cbb.SelectedValueChanged += schetscontrol.VeranderKleur;
+        foreach (string k in kleuren)
+            cbb.Items.Add(k);
+        cbb.SelectedIndex = 0;
+
+        ToolStripMenuItem submenu = new ToolStripMenuItem("Kies kleur");
+        foreach (string k in kleuren)
+            submenu.DropDownItems.Add(k, null, schetscontrol.VeranderKleurViaMenu);
+        menu.DropDownItems.Add(submenu);
+    
+    SchetsWin.cs: Toegevoegd
+        kleurKiezen = new Button(); paneel.Controls.Add(kleurKiezen);
+        kleurKiezen.BackColor = Color.Red;
+        kleurKiezen.Location = new Point(240, 0);
+        kleurKiezen.Click += maakKleurMenu;
+
+        private void maakKleurMenu(object sender, EventArgs e) {
+            ColorDialog colorPicker = new ColorDialog(); 
+            if (colorPicker.ShowDialog() == DialogResult.OK)
+            {
+                kleurKiezen.BackColor = colorPicker.Color;
+                schetscontrol.VeranderKleur(kleurKiezen);
+            }
+        }
+
+        menu.DropDownItems.Add("Kies kleur", null, maakKleurMenu);
+
+        Button KleurKiezen om het globaal te maken
