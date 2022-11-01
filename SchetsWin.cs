@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 public class SchetsWin : Form
 {   
@@ -11,6 +12,7 @@ public class SchetsWin : Form
     SchetsControl schetscontrol;
     ISchetsTool huidigeTool;
     Panel paneel;
+    Button kleurKiezen;
     bool vast;
 
     private void veranderAfmeting(object o, EventArgs ea)
@@ -64,7 +66,7 @@ public class SchetsWin : Form
         schetscontrol.MouseUp   += (object o, MouseEventArgs mea) =>
                                     {   if (vast)
                                         huidigeTool.MuisLos (schetscontrol, mea.Location);
-                                        vast = false; 
+                                        vast = false;
                                     };
         schetscontrol.KeyPress +=  (object o, KeyPressEventArgs kpea) => 
                                     {   huidigeTool.Letter  (schetscontrol, kpea.KeyChar); 
@@ -112,10 +114,7 @@ public class SchetsWin : Form
         ToolStripMenuItem menu = new ToolStripMenuItem("Actie");
         menu.DropDownItems.Add("Clear", null, schetscontrol.Schoon );
         menu.DropDownItems.Add("Roteer", null, schetscontrol.Roteer );
-        ToolStripMenuItem submenu = new ToolStripMenuItem("Kies kleur");
-        foreach (string k in kleuren)
-            submenu.DropDownItems.Add(k, null, schetscontrol.VeranderKleurViaMenu);
-        menu.DropDownItems.Add(submenu);
+        menu.DropDownItems.Add("Kies kleur", null, maakKleurMenu);
         menuStrip.Items.Add(menu);
     }
 
@@ -159,14 +158,20 @@ public class SchetsWin : Form
         penkleur.Text = "Penkleur:"; 
         penkleur.Location = new Point(180, 3); 
         penkleur.AutoSize = true;               
-            
-        ComboBox cbb = new ComboBox(); paneel.Controls.Add(cbb);
-        cbb.Location = new Point(240, 0); 
-        cbb.DropDownStyle = ComboBoxStyle.DropDownList; 
-        cbb.SelectedValueChanged += schetscontrol.VeranderKleur;
-        foreach (string k in kleuren)
-            cbb.Items.Add(k);
-        cbb.SelectedIndex = 0;
+
+        kleurKiezen = new Button(); paneel.Controls.Add(kleurKiezen);
+        kleurKiezen.BackColor = Color.Red;
+        kleurKiezen.Location = new Point(240, 0);
+        kleurKiezen.Click += maakKleurMenu;
+    }
+
+    private void maakKleurMenu(object sender, EventArgs e) {
+        ColorDialog colorPicker = new ColorDialog(); 
+        if (colorPicker.ShowDialog() == DialogResult.OK)
+        {
+            kleurKiezen.BackColor = colorPicker.Color;
+            schetscontrol.VeranderKleur(kleurKiezen);
+        }
     }
 
 
