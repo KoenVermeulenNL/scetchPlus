@@ -13,6 +13,8 @@ public class SchetsWin : Form
     ISchetsTool huidigeTool;
     Panel paneel;
     Button kleurKiezen;
+    Bitmap penGrootteBitmap;
+    Label penGrootteLabel;
     bool vast;
 
     private void veranderAfmeting(object o, EventArgs ea)
@@ -102,7 +104,11 @@ public class SchetsWin : Form
         {   ToolStripItem item = new ToolStripMenuItem();
             item.Tag = tool;
             item.Text = tool.ToString();
-            item.Image = new Bitmap($"../../../Icons/{tool.ToString()}.png");
+            try {
+                item.Image = new Bitmap($"../../../Icons/{tool.ToString()}.png");
+            } catch {
+                item.Image = new Bitmap($"Icons/{tool.ToString()}.png");
+            }
             item.Click += this.klikToolMenu;
             menu.DropDownItems.Add(item);
         }
@@ -129,7 +135,11 @@ public class SchetsWin : Form
             b.Location = new Point(10, 10 + t * 62);
             b.Tag = tool;
             b.Text = tool.ToString();
-            b.Image = new Bitmap($"../../../Icons/{tool.ToString()}.png");
+            try {
+                b.Image = new Bitmap($"../../../Icons/{tool.ToString()}.png");
+            } catch {
+                b.Image = new Bitmap($"Icons/{tool.ToString()}.png");
+            }
             b.TextAlign = ContentAlignment.TopCenter;
             b.ImageAlign = ContentAlignment.BottomCenter;
             b.Click += this.klikToolButton;
@@ -163,6 +173,28 @@ public class SchetsWin : Form
         kleurKiezen.BackColor = Color.Red;
         kleurKiezen.Location = new Point(240, 0);
         kleurKiezen.Click += maakKleurMenu;
+
+        TrackBar penGrootteTrackBar = new TrackBar(); paneel.Controls.Add(penGrootteTrackBar);
+        penGrootteTrackBar.Location = new Point(420, 0);
+        penGrootteTrackBar.Value = 3;
+        penGrootteTrackBar.Minimum = 1;
+        penGrootteTrackBar.Maximum = 10;
+        penGrootteTrackBar.TickFrequency = 1;
+
+        Label penGrootteTekst = new Label(); paneel.Controls.Add(penGrootteTekst);
+        penGrootteTekst.Text = "Pengrootte:";
+        penGrootteTekst.Location = new Point(350, 0);
+
+        penGrootteLabel = new Label(); paneel.Controls.Add(penGrootteLabel);
+        penGrootteLabel.Location = new Point(520, 0);
+        penGrootteLabel.Size = new Size(30, 30);
+        penGrootteLabel.BackColor = Color.Transparent;
+        penGrootteBitmap = new Bitmap(30, 30);
+        penGrootteLabel.Image = penGrootteBitmap;
+
+        Graphics tijdelijk = Graphics.FromImage(penGrootteBitmap);
+        tijdelijk.FillEllipse(Brushes.Red, 16-3, 11-3, 6, 6);
+        penGrootteTrackBar.ValueChanged += veranderPenGrootte;
     }
 
     private void maakKleurMenu(object sender, EventArgs e) {
@@ -172,6 +204,18 @@ public class SchetsWin : Form
             kleurKiezen.BackColor = colorPicker.Color;
             schetscontrol.VeranderKleur(kleurKiezen);
         }
+    }
+
+    private void veranderPenGrootte(object sender, EventArgs e) {
+        Debug.WriteLine(((TrackBar)sender).Value);
+        int trackbarValue = ((TrackBar)sender).Value * 2;
+        Graphics g = Graphics.FromImage(penGrootteBitmap);
+        Brush kleur = new SolidBrush(kleurKiezen.BackColor);
+        g.FillRectangle(new SolidBrush(Color.FromArgb(240,240,240)), 0, 0, 30, 30);
+        g.FillEllipse(kleur, 16-(trackbarValue/2), 11-(trackbarValue/2), trackbarValue, trackbarValue);
+        penGrootteLabel.Invalidate();
+
+        schetscontrol.VeranderPenGrootte(trackbarValue);
     }
 
 

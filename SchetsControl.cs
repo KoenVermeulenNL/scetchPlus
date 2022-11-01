@@ -7,9 +7,13 @@ public class SchetsControl : UserControl
 {   
     public Schets schets;
     private Color penkleur = Color.Red;
+    private int pengrootte = 3;
 
     public Color PenKleur
     { get { return penkleur; }
+    }
+    public int PenGrootte
+    { get { return pengrootte; }
     }
     public Schets Schets
     { get { return schets;   }
@@ -48,5 +52,9 @@ public class SchetsControl : UserControl
     public void VeranderKleur(Button kleurKiezen)
     {   Color kleurNaam = kleurKiezen.BackColor;
         penkleur = kleurNaam;
+    }
+
+    public void VeranderPenGrootte(int value) {
+        pengrootte = value;
     }
 }

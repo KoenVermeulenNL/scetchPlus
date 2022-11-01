@@ -15,12 +15,14 @@ public abstract class StartpuntTool : ISchetsTool
 {
     protected Point startpunt;
     protected Brush kwast;
+    protected int pengrootte;
 
     public virtual void MuisVast(SchetsControl s, Point p)
     {   startpunt = p;
     }
     public virtual void MuisLos(SchetsControl s, Point p)
     {   kwast = new SolidBrush(s.PenKleur);
+        pengrootte = s.PenGrootte;
     }
     public abstract void MuisDrag(SchetsControl s, Point p);
     public abstract void Letter(SchetsControl s, char c);
@@ -91,7 +93,7 @@ public class RechthoekTool : TweepuntTool
     public override string ToString() { return "kader"; }
 
     public override void Bezig(Graphics g, Point p1, Point p2)
-    {   g.DrawRectangle(MaakPen(kwast,3), TweepuntTool.Punten2Rechthoek(p1, p2));
+    {   g.DrawRectangle(MaakPen(kwast,pengrootte), TweepuntTool.Punten2Rechthoek(p1, p2));
     }
 }
     
@@ -111,7 +113,7 @@ public class CirkelTool : TweepuntTool
 
     public override void Bezig(Graphics g, Point p1, Point p2)
     {
-        g.DrawEllipse(MaakPen(kwast, 3), TweepuntTool.Punten2Rechthoek(p1, p2));
+        g.DrawEllipse(MaakPen(kwast, pengrootte), TweepuntTool.Punten2Rechthoek(p1, p2));
     }
 }
 
@@ -131,7 +133,7 @@ public class LijnTool : TweepuntTool
     public override string ToString() { return "lijn"; }
 
     public override void Bezig(Graphics g, Point p1, Point p2)
-    {   g.DrawLine(MaakPen(this.kwast,3), p1, p2);
+    {   g.DrawLine(MaakPen(this.kwast, pengrootte), p1, p2);
     }
 }
 
@@ -150,6 +152,6 @@ public class GumTool : PenTool
     public override string ToString() { return "gum"; }
 
     public override void Bezig(Graphics g, Point p1, Point p2)
-    {   g.DrawLine(MaakPen(Brushes.White, 7), p1, p2);
+    {   g.DrawLine(MaakPen(Brushes.White, pengrootte+2), p1, p2);
     }
 }

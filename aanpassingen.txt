@@ -1,3 +1,69 @@
+voor opdracht 5.2:
+    schetscontrol.cs: Toegevoegd
+        private int pengrootte = 3;
+
+        public int PenGrootte 
+        {get {return pengrootte}}
+
+        public void VeranderPenGrootte(int value) {
+        pengrootte = value;
+    }
+
+    tools.cs: Toegevoegd
+        protected int pengrootte;
+
+
+
+        public virtual void MuisLos(SchetsControl s, Point p)
+        {   kwast = new SolidBrush(s.PenKleur);
+            pengrootte = s.PenGrootte; DIT TOEGEVOEGD
+        }
+
+
+        - alle tools die een dikte nodig hebben krijgen deze pengrootte mee 
+        - Bij de gum is dit hetzelfde + 2
+
+    schetswin.cs: Toegevoegd
+        Bitmap penGrootteBitmap;
+        Label penGrootteLabel;
+
+
+        TrackBar penGrootteTrackBar = new TrackBar(); paneel.Controls.Add(penGrootteTrackBar);
+        penGrootteTrackBar.Location = new Point(420, 0);
+        penGrootteTrackBar.Value = 3;
+        penGrootteTrackBar.Minimum = 1;
+        penGrootteTrackBar.Maximum = 10;
+        penGrootteTrackBar.TickFrequency = 1;
+
+        Label penGrootteTekst = new Label(); paneel.Controls.Add(penGrootteTekst);
+        penGrootteTekst.Text = "Pengrootte:";
+        penGrootteTekst.Location = new Point(350, 0);
+
+        penGrootteLabel = new Label(); paneel.Controls.Add(penGrootteLabel);
+        penGrootteLabel.Location = new Point(520, 0);
+        penGrootteLabel.Size = new Size(30, 30);
+        penGrootteLabel.BackColor = Color.Transparent;
+        penGrootteBitmap = new Bitmap(30, 30);
+        penGrootteLabel.Image = penGrootteBitmap;
+
+        Graphics tijdelijk = Graphics.FromImage(penGrootteBitmap);
+        tijdelijk.FillEllipse(Brushes.Red, 16-3, 11-3, 6, 6);
+        penGrootteTrackBar.ValueChanged += veranderPenGrootte;
+
+
+        private void veranderPenGrootte(object sender, EventArgs e) {
+            Debug.WriteLine(((TrackBar)sender).Value);
+            int trackbarValue = ((TrackBar)sender).Value * 2;
+            Graphics g = Graphics.FromImage(penGrootteBitmap);
+            Brush kleur = new SolidBrush(kleurKiezen.BackColor);
+            g.FillRectangle(new SolidBrush(Color.FromArgb(240,240,240)), 0, 0, 30, 30);
+            g.FillEllipse(kleur, 16-(trackbarValue/2), 11-(trackbarValue/2), trackbarValue, trackbarValue);
+            penGrootteLabel.Invalidate();
+
+            schetscontrol.VeranderPenGrootte(trackbarValue);
+        }
+
+
 Voor opdracht 5.3:
     schetscontrol.cs: functie VeranderKleur
     van:    public void VeranderKleurViaMenu(object obj, EventArgs ea)
