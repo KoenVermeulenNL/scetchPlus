@@ -25,8 +25,8 @@ public class SchetsWin : Form
                                 , new CirkelTool()
                                 , new VolCirkelTool()
                                 , new TekstTool()
-                                , new GumTool()
                                 , new ObjectGumTool()
+                                , new GumTool()
                                 };
 
     private void veranderAfmeting(object o, EventArgs ea)
