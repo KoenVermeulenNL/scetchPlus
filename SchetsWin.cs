@@ -26,6 +26,7 @@ public class SchetsWin : Form
                                 , new VolCirkelTool()
                                 , new TekstTool()
                                 , new ObjectGumTool()
+                                , new MoveTool()
                                 , new GumTool()
                                 };
 
@@ -303,6 +304,7 @@ public class SchetsWin : Form
                     // Read line by line  
                     while ((line = reader.ReadLine()) != null)
                     {
+
                         string fullLine = line;
                         string[] objectStrings = fullLine.Split(";");
                         foreach (string objectString in objectStrings) {
