@@ -26,6 +26,7 @@ public class SchetsWin : Form
                                 , new VolCirkelTool()
                                 , new TekstTool()
                                 , new ObjectGumTool()
+                                , new MoveTool()
                                 , new GumTool()
                                 };
 
