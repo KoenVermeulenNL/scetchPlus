@@ -87,6 +87,7 @@ public abstract class TweepuntTool : StartpuntTool
         this.Compleet(s.MaakBitmapGraphics(), this.startpunt, p, kwast);
         s.Invalidate();
         s.schets.getekendeObjecten.Add(new GetekendObject(this, this.startpunt, p, kwast));
+        s.schets.savedGetekendeObjecten.Clear();
         Debug.WriteLine(s.schets.getekendeObjecten.Count);
     }
     public override void Teken(SchetsControl s, Point start, Point end, Brush kleur) {

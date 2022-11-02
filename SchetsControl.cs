@@ -46,6 +46,7 @@ public class SchetsControl : UserControl
     public void Schoon(object o, EventArgs ea)
     {   schets.Schoon();
         schets.getekendeObjecten.Clear();
+        schets.savedGetekendeObjecten.Clear();
         this.Invalidate();
     }
     public void Roteer(object o, EventArgs ea)
@@ -76,7 +77,17 @@ public class SchetsControl : UserControl
     public void Undo(object o, EventArgs ea) {
         if (schets.getekendeObjecten.Count > 0)
         {
+            schets.savedGetekendeObjecten.Add(schets.getekendeObjecten[schets.getekendeObjecten.Count - 1]);
             schets.getekendeObjecten.RemoveAt(schets.getekendeObjecten.Count - 1);
+            DrawBitmapFromList();
+        }
+    }
+    public void Redo(object o, EventArgs ea)
+    {
+        if (schets.savedGetekendeObjecten.Count > 0)
+        {
+            schets.getekendeObjecten.Add(schets.savedGetekendeObjecten[schets.savedGetekendeObjecten.Count - 1]);
+            schets.savedGetekendeObjecten.RemoveAt(schets.savedGetekendeObjecten.Count - 1);
             DrawBitmapFromList();
         }
     }
