@@ -282,6 +282,8 @@ public class MoveTool : PenTool
 
     private void verwijderObject(GetekendObject obj)
     {
-        Debug.WriteLine(obj.soort.ToString());
+        if (obj != null) {
+            Debug.WriteLine(obj.soort.ToString());
+        }
     }
 }
