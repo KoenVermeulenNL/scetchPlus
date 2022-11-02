@@ -178,8 +178,21 @@ public class ObjectGumTool : PenTool
     //Weet niet of dit de aanpak is...
     public override string ToString() { return "delete"; }
 
-    public override void Bezig(Graphics g, Point p1, Point p2, Brush kleur)
-    {
-        
+    public override void MuisLos(SchetsControl s, Point p)
+    {   int x = p.X;
+        int y = p.Y;
+        foreach (GetekendObject gobj in s.schets.getekendeObjecten) {
+            if ((x>=gobj.beginpunt.X && x<=gobj.eindpunt.X) && (y>=gobj.beginpunt.Y && y<=gobj.eindpunt.Y)) {
+                if (gobj.soort.ToString() == "vlak" || gobj.soort.ToString() == "cirkel"){
+                    Debug.WriteLine(gobj.soort);
+                } else if (gobj.soort.ToString() == "kader") {
+                    if ((x>=gobj.beginpunt.X && x<=gobj.eindpunt.X) && (y>=gobj.beginpunt.Y && y<=gobj.beginpunt.Y+5)) {
+                        Debug.WriteLine(gobj.soort);
+                    }
+                }
+
+
+            }
+        }
     }
 }
