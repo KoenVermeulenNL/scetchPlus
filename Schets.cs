@@ -8,7 +8,8 @@ public class Schets
 {
     public Bitmap bitmap;
     public List<GetekendObject> getekendeObjecten = new List<GetekendObject>();
-        
+    public List<GetekendObject> savedGetekendeObjecten = new List<GetekendObject>();
+
     public Schets()
     {
         bitmap = new Bitmap(1, 1);

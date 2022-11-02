@@ -159,32 +159,32 @@ public class SchetsWin : Form
     }
 
     private void maakActieButtons(String[] kleuren)
-    {   
+    {
         paneel = new Panel(); this.Controls.Add(paneel);
         paneel.Size = new Size(600, 24);
-            
+
         Button clear = new Button(); paneel.Controls.Add(clear);
-        clear.Text = "Clear";  
-        clear.Location = new Point(  0, 0); 
-        clear.Click += schetscontrol.Schoon;        
-            
+        clear.Text = "Clear";
+        clear.Location = new Point(0, 0);
+        clear.Click += schetscontrol.Schoon;
+
         Button rotate = new Button(); paneel.Controls.Add(rotate);
-        rotate.Text = "Rotate"; 
-        rotate.Location = new Point( 80, 0); 
-        rotate.Click += schetscontrol.Roteer; 
-           
+        rotate.Text = "Rotate";
+        rotate.Location = new Point(80, 0);
+        rotate.Click += schetscontrol.Roteer;
+
         Label penkleur = new Label(); paneel.Controls.Add(penkleur);
-        penkleur.Text = "Penkleur:"; 
-        penkleur.Location = new Point(260, 3); 
-        penkleur.AutoSize = true;               
+        penkleur.Text = "Penkleur:";
+        penkleur.Location = new Point(320, 3);
+        penkleur.AutoSize = true;
 
         kleurKiezen = new Button(); paneel.Controls.Add(kleurKiezen);
         kleurKiezen.BackColor = Color.Red;
-        kleurKiezen.Location = new Point(320, 0);
+        kleurKiezen.Location = new Point(380, 0);
         kleurKiezen.Click += maakKleurMenu;
 
         TrackBar penGrootteTrackBar = new TrackBar(); paneel.Controls.Add(penGrootteTrackBar);
-        penGrootteTrackBar.Location = new Point(420, 0);
+        penGrootteTrackBar.Location = new Point(520, 0);
         penGrootteTrackBar.Value = 3;
         penGrootteTrackBar.Minimum = 1;
         penGrootteTrackBar.Maximum = 10;
@@ -192,7 +192,7 @@ public class SchetsWin : Form
 
         Label penGrootteTekst = new Label(); paneel.Controls.Add(penGrootteTekst);
         penGrootteTekst.Text = "Pengrootte:";
-        penGrootteTekst.Location = new Point(350, 0);
+        penGrootteTekst.Location = new Point(460, 0);
 
         penGrootteLabel = new Label(); paneel.Controls.Add(penGrootteLabel);
         penGrootteLabel.Location = new Point(520, 0);
@@ -202,13 +202,18 @@ public class SchetsWin : Form
         penGrootteLabel.Image = penGrootteBitmap;
 
         Graphics tijdelijk = Graphics.FromImage(penGrootteBitmap);
-        tijdelijk.FillEllipse(Brushes.Red, 16-3, 11-3, 6, 6);
+        tijdelijk.FillEllipse(Brushes.Red, 16 - 3, 11 - 3, 6, 6);
         penGrootteTrackBar.ValueChanged += veranderPenGrootte;
 
         Button undo = new Button(); paneel.Controls.Add(undo);
         undo.Text = "Undo";
         undo.Location = new Point(160, 0);
         undo.Click += schetscontrol.Undo;
+
+        Button redo = new Button(); paneel.Controls.Add(redo);
+        redo.Text = "Redo";
+        redo.Location = new Point(240, 0);
+        redo.Click += schetscontrol.Redo;
     }
 
     private void maakKleurMenu(object sender, EventArgs e) {
