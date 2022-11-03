@@ -165,6 +165,7 @@ public class PenTool : LijnTool
 
     public GetekendObject checkbounds(SchetsControl s, Point p)
     {
+        // s.schets.getekendeObjecten.ForEach(i => Debug.Write($"{i.beginpunt}\t"));
         int x = p.X;
         int y = p.Y;
         foreach (GetekendObject gobj in s.schets.getekendeObjecten)
@@ -183,6 +184,7 @@ public class PenTool : LijnTool
                 }
                 if (gobj.soort.ToString() == "kader")
                 {
+                    Debug.WriteLine("kader");
                     bool randlinks = ((x >= gobj.beginpunt.X - 5 && x <= gobj.beginpunt.X + 5) && (y >= gobj.beginpunt.Y && y <= gobj.eindpunt.Y));
                     bool randrechts = ((x >= gobj.eindpunt.X - 5 && x <= gobj.eindpunt.X + 5) && (y >= gobj.beginpunt.Y && y <= gobj.eindpunt.Y));
                     bool randboven = ((x >= gobj.beginpunt.X && x <= gobj.eindpunt.X) && (y >= gobj.beginpunt.Y - 5 && y <= gobj.beginpunt.Y + 5));
@@ -190,11 +192,11 @@ public class PenTool : LijnTool
                     if (randlinks || randrechts || randboven || randonder)
                     {
                         return gobj;
-                    }
-                    return null;
+                    } else return null;
                 }
                 if (gobj.soort.ToString() == "cirkel")
                 {
+                    Debug.WriteLine("cirkel");
                     int beginX = gobj.beginpunt.X;
                     int eindX = gobj.eindpunt.X;
                     int beginY = gobj.beginpunt.Y;
@@ -206,11 +208,11 @@ public class PenTool : LijnTool
                     if ((afstand <= straal))
                     {
                         return gobj;
-                    }
-                    return null;
+                    } else return null;
                 }
                 if (gobj.soort.ToString() == "rand")
                 {
+                    Debug.WriteLine("rand");
                     int beginX = gobj.beginpunt.X;
                     int eindX = gobj.eindpunt.X;
                     int beginY = gobj.beginpunt.Y;
@@ -222,11 +224,11 @@ public class PenTool : LijnTool
                     if ((afstand <= straal + 5 && afstand >= straal - 5))
                     {
                         return gobj;
-                    }
-                    return null;
+                    } return null;
                 }
                 if (gobj.soort.ToString() == "lijn")
                 {
+                    Debug.WriteLine("lijn");
                     int x0 = x;
                     int y0 = y;
                     int x1 = gobj.beginpunt.X;
@@ -237,8 +239,7 @@ public class PenTool : LijnTool
                     if (afstand <= 5 && afstand >= -5)
                     {
                         return gobj;
-                    }
-                    return null;
+                    } return null;
                 }
             }
         }
@@ -262,11 +263,17 @@ public class ObjectGumTool : PenTool
 
     public override void MuisLos(SchetsControl s, Point p)
     { 
-        verwijderObject(checkbounds(s, p));
+        verwijderObject(s, checkbounds(s, p));
     }
 
-    private void verwijderObject(GetekendObject obj) {
-        Debug.WriteLine(obj.soort.ToString());
+    private void verwijderObject(SchetsControl s, GetekendObject obj)
+    {
+        Debug.WriteLine(obj);
+        if (obj != null) {
+            Debug.WriteLine("verwijder object");
+            s.schets.getekendeObjecten.Remove(obj);
+            s.DrawBitmapFromList();
+        }
     }
 }
 
@@ -277,13 +284,6 @@ public class MoveTool : PenTool
 
     public override void MuisLos(SchetsControl s, Point p)
     {
-        verwijderObject(checkbounds(s, p));
-    }
-
-    private void verwijderObject(GetekendObject obj)
-    {
-        if (obj != null) {
-            Debug.WriteLine(obj.soort.ToString());
-        }
+        Debug.WriteLine(checkbounds(s, p));
     }
 }
