@@ -177,7 +177,8 @@ public class PenTool : LijnTool
             int? checkYeind = gobj.beginpunt.Y > gobj.eindpunt.Y ? gobj.beginpunt.Y : gobj.eindpunt.Y;
 
             // niks met bounding te maken
-            if (gobj.soort.ToString() == "lijn"){
+            if (gobj.soort.ToString() == "lijn")
+            {
                 int x0 = x;
                 int y0 = y;
                 int x1 = gobj.beginpunt.X;
@@ -193,51 +194,55 @@ public class PenTool : LijnTool
             
             if ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin && y <= checkYeind))
             {
-                if (gobj.soort.ToString() == "vlak")
-                {
-                    eindObject = gobj;
-                }
-                if (gobj.soort.ToString() == "kader")
-                {
-                    bool randlinks = ((x >= checkXbegin - 5 && x <= checkXbegin + 5) && (y >= checkYbegin && y <= checkYeind));
-                    bool randrechts = ((x >= checkXeind - 5 && x <= checkXeind + 5) && (y >= checkYbegin && y <= checkYeind));
-                    bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - 5 && y <= checkYbegin + 5));
-                    bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - 5 && y <= checkYeind + 5));
-                    if (randlinks || randrechts || randboven || randonder)
-                    {
+                switch (gobj.soort.ToString()) {
+                    case "vlak":
                         eindObject = gobj;
-                    }
-                }
-                if (gobj.soort.ToString() == "cirkel")
-                {
-                    // deze nog goedmaken voor ellipse
-                    int beginX = (int)checkXbegin;
-                    int eindX = (int)checkXeind;
-                    int beginY = (int)checkYbegin;
-                    int eindY = (int)checkYeind;
-                    double straal = (eindX - beginX) / 2;
-                    double middenX = beginX + straal;
-                    double middenY = beginY + straal;
-                    double afstand = Math.Sqrt((x - middenX) * (x - middenX) + (y - middenY) * (y - middenY)) - straal;
-                    if (afstand <=5)
-                    {
-                        eindObject = gobj;
-                    }
-                }
-                if (gobj.soort.ToString() == "rand")
-                {
-                    int beginX = (int)checkXbegin;
-                    int eindX = (int)checkXeind;
-                    int beginY = (int)checkYbegin;
-                    int eindY = (int)checkYeind;
-                    double straal = (eindX - beginX) / 2;
-                    double middenX = beginX + straal;
-                    double middenY = beginY + straal;
-                    double afstand = Math.Sqrt((x - middenX) * (x - middenX) + (y - middenY) * (y - middenY));
-                    if ((afstand <= straal + 2 && afstand >= straal - 2))
-                    {
-                        eindObject = gobj;
-                    }
+                        break;
+
+                    case "kader":
+                        bool randlinks = ((x >= checkXbegin - 5 && x <= checkXbegin + 5) && (y >= checkYbegin && y <= checkYeind));
+                        bool randrechts = ((x >= checkXeind - 5 && x <= checkXeind + 5) && (y >= checkYbegin && y <= checkYeind));
+                        bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - 5 && y <= checkYbegin + 5));
+                        bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - 5 && y <= checkYeind + 5));
+                        if (randlinks || randrechts || randboven || randonder)
+                        {
+                            eindObject = gobj;
+                        }
+                        break;
+                
+                    case "rand":
+                        int beginXrand = (int)checkXbegin;
+                        int eindXrand = (int)checkXeind;
+                        int beginYrand = (int)checkYbegin;
+                        int eindYrand = (int)checkYeind;
+                        double arand = (eindXrand - beginXrand)/2;
+                        double brand = (eindYrand - beginYrand)/2;
+                        double mXrand = beginXrand + arand;
+                        double mYrand = beginYrand + brand;
+                        double afstandCirkelrand = ((x-mXrand)*(x-mXrand))/(arand*arand) + ((y-mYrand)*(y-mYrand))/(brand*brand);
+                        if (afstandCirkelrand <= 1.05 && afstandCirkelrand >= 0.95)
+                        {
+                            eindObject = gobj;
+                        }
+                        break;
+                    case "cirkel":
+                        // deze nog goedmaken voor ellipse
+                        // formule voor ellipse:
+                        // (x-mx)^2/a^2 + (y-my)^2/b^2
+                        int beginX = (int)checkXbegin;
+                        int eindX = (int)checkXeind;
+                        int beginY = (int)checkYbegin;
+                        int eindY = (int)checkYeind;
+                        double a = (eindX - beginX)/2;
+                        double b = (eindY - beginY)/2;
+                        double mX = beginX + a;
+                        double mY = beginY + b;
+                        double afstandCirkel = ((x-mX)*(x-mX))/(a*a) + ((y-mY)*(y-mY))/(b*b);
+                        if (afstandCirkel <= 1.05)
+                        {
+                            eindObject = gobj;
+                        }
+                        break;
                 }
             }
         }
@@ -266,7 +271,8 @@ public class ObjectGumTool : PenTool
 
     private void verwijderObject(SchetsControl s, GetekendObject obj)
     {
-        if (obj != null) {
+        if (obj != null) 
+        {
             s.schets.getekendeObjecten.Remove(obj);
             s.DrawBitmapFromList();
         }
