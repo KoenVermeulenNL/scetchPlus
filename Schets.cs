@@ -20,18 +20,16 @@ public class Schets
         public ISchetsTool soort;
         public Point beginpunt;
         public Point eindpunt;
-        public Brush kleur;
+        public Color kleur;
+        public int lijndikte;
         public string tekst = "";
 
-        public GetekendObject(ISchetsTool soort, Point beginpunt, Point eindpunt, Brush kleur) {
+        public GetekendObject(ISchetsTool soort, Point beginpunt, Point eindpunt, Color kleur, int lijndikte) {
             this.soort = soort;
             this.beginpunt = beginpunt;
             this.eindpunt = eindpunt;
             this.kleur = kleur;
-        }
-
-        public virtual void LaatZien(Graphics g) {
-            
+            this.lijndikte = lijndikte;
         }
     }
 

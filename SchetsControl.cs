@@ -69,7 +69,7 @@ public class SchetsControl : UserControl
         schets.Schoon();
         foreach (GetekendObject gObject in schets.getekendeObjecten)
         {
-            gObject.soort.Teken(this, gObject.beginpunt, gObject.eindpunt, gObject.kleur);
+            gObject.soort.Teken(this, gObject.beginpunt, gObject.eindpunt, gObject.kleur, gObject.lijndikte);
         }
         this.Invalidate();
     }
