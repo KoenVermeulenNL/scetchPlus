@@ -168,6 +168,7 @@ public class PenTool : LijnTool
     {
         int x = p.X;
         int y = p.Y;
+        GetekendObject eindObject = null;
         foreach (GetekendObject gobj in s.schets.getekendeObjecten)
         {
             int? checkXbegin = gobj.beginpunt.X < gobj.eindpunt.X ? gobj.beginpunt.X : gobj.eindpunt.X;
@@ -175,75 +176,72 @@ public class PenTool : LijnTool
             int? checkYbegin = gobj.beginpunt.Y < gobj.eindpunt.Y ? gobj.beginpunt.Y : gobj.eindpunt.Y;
             int? checkYeind = gobj.beginpunt.Y > gobj.eindpunt.Y ? gobj.beginpunt.Y : gobj.eindpunt.Y;
 
-            // Debug.WriteLine($"muis: {p} beginpunt: {gobj.beginpunt}");
+            // niks met bounding te maken
+            if (gobj.soort.ToString() == "lijn"){
+                int x0 = x;
+                int y0 = y;
+                int x1 = gobj.beginpunt.X;
+                int y1 = gobj.beginpunt.Y;
+                int x2 = gobj.eindpunt.X;
+                int y2 = gobj.eindpunt.Y;
+                double afstand = (Math.Abs((x2 - x1) * (y1 - y0) - (x1 - x0) * (y2 - y1))) / (Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)));
+                if (afstand <= 2 && afstand >= -2)
+                {
+                    eindObject = gobj;
+                }
+            }
+            
             if ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin && y <= checkYeind))
             {
                 if (gobj.soort.ToString() == "vlak")
                 {
-                    return gobj;
+                    eindObject = gobj;
                 }
                 if (gobj.soort.ToString() == "kader")
                 {
-                    bool randlinks = ((x >= gobj.beginpunt.X - 5 && x <= gobj.beginpunt.X + 5) && (y >= gobj.beginpunt.Y && y <= gobj.eindpunt.Y));
-                    bool randrechts = ((x >= gobj.eindpunt.X - 5 && x <= gobj.eindpunt.X + 5) && (y >= gobj.beginpunt.Y && y <= gobj.eindpunt.Y));
-                    bool randboven = ((x >= gobj.beginpunt.X && x <= gobj.eindpunt.X) && (y >= gobj.beginpunt.Y - 5 && y <= gobj.beginpunt.Y + 5));
-                    bool randonder = ((x >= gobj.beginpunt.X && x <= gobj.eindpunt.X) && (y >= gobj.eindpunt.Y - 5 && y <= gobj.eindpunt.Y + 5));
+                    bool randlinks = ((x >= checkXbegin - 5 && x <= checkXbegin + 5) && (y >= checkYbegin && y <= checkYeind));
+                    bool randrechts = ((x >= checkXeind - 5 && x <= checkXeind + 5) && (y >= checkYbegin && y <= checkYeind));
+                    bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - 5 && y <= checkYbegin + 5));
+                    bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - 5 && y <= checkYeind + 5));
                     if (randlinks || randrechts || randboven || randonder)
                     {
-                        return gobj;
+                        eindObject = gobj;
                     }
-                    return null;
                 }
                 if (gobj.soort.ToString() == "cirkel")
                 {
-                    int beginX = gobj.beginpunt.X;
-                    int eindX = gobj.eindpunt.X;
-                    int beginY = gobj.beginpunt.Y;
-                    int eindY = gobj.eindpunt.Y;
+                    // deze nog goedmaken voor ellipse
+                    int beginX = (int)checkXbegin;
+                    int eindX = (int)checkXeind;
+                    int beginY = (int)checkYbegin;
+                    int eindY = (int)checkYeind;
                     double straal = (eindX - beginX) / 2;
                     double middenX = beginX + straal;
                     double middenY = beginY + straal;
-                    double afstand = Math.Sqrt((x - middenX) * (x - middenX) + (y - middenY) * (y - middenY));
-                    if ((afstand <= straal))
+                    double afstand = Math.Sqrt((x - middenX) * (x - middenX) + (y - middenY) * (y - middenY)) - straal;
+                    if (afstand <=5)
                     {
-                        return gobj;
+                        eindObject = gobj;
                     }
-                    return null;
                 }
                 if (gobj.soort.ToString() == "rand")
                 {
-                    int beginX = gobj.beginpunt.X;
-                    int eindX = gobj.eindpunt.X;
-                    int beginY = gobj.beginpunt.Y;
-                    int eindY = gobj.eindpunt.Y;
+                    int beginX = (int)checkXbegin;
+                    int eindX = (int)checkXeind;
+                    int beginY = (int)checkYbegin;
+                    int eindY = (int)checkYeind;
                     double straal = (eindX - beginX) / 2;
                     double middenX = beginX + straal;
                     double middenY = beginY + straal;
                     double afstand = Math.Sqrt((x - middenX) * (x - middenX) + (y - middenY) * (y - middenY));
-                    if ((afstand <= straal + 5 && afstand >= straal - 5))
+                    if ((afstand <= straal + 2 && afstand >= straal - 2))
                     {
-                        return gobj;
+                        eindObject = gobj;
                     }
-                    return null;
-                }
-                if (gobj.soort.ToString() == "lijn")
-                {
-                    int x0 = x;
-                    int y0 = y;
-                    int x1 = gobj.beginpunt.X;
-                    int y1 = gobj.beginpunt.Y;
-                    int x2 = gobj.eindpunt.X;
-                    int y2 = gobj.eindpunt.Y;
-                    double afstand = (Math.Abs((x2 - x1) * (y1 - y0) - (x1 - x0) * (y2 - y1))) / (Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)));
-                    if (afstand <= 5 && afstand >= -5)
-                    {
-                        return gobj;
-                    }
-                    return null;
                 }
             }
         }
-        return null;
+        return eindObject;
     }
 }
     
@@ -263,13 +261,14 @@ public class ObjectGumTool : PenTool
 
     public override void MuisLos(SchetsControl s, Point p)
     { 
-        verwijderObject(checkbounds(s, p));
+        verwijderObject(s, checkbounds(s, p));
     }
 
-    private void verwijderObject(GetekendObject obj) {
-        if (obj != null)
-        {
-            Debug.WriteLine(obj.soort.ToString());
+    private void verwijderObject(SchetsControl s, GetekendObject obj)
+    {
+        if (obj != null) {
+            s.schets.getekendeObjecten.Remove(obj);
+            s.DrawBitmapFromList();
         }
     }
 }
