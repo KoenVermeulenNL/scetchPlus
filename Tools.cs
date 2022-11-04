@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Diagnostics;
 using static Schets;
+using System.Windows.Forms;
 
 public interface ISchetsTool
 {
@@ -266,7 +267,10 @@ public class ObjectGumTool : PenTool
     }
 
     private void verwijderObject(GetekendObject obj) {
-        Debug.WriteLine(obj.soort.ToString());
+        if (obj != null)
+        {
+            Debug.WriteLine(obj.soort.ToString());
+        }
     }
 }
 
@@ -275,15 +279,36 @@ public class MoveTool : PenTool
     //Weet niet of dit de aanpak is...
     public override string ToString() { return "move"; }
 
-    public override void MuisLos(SchetsControl s, Point p)
+
+    int pInBoundX = 0;
+    int pInBoundY = 0;
+
+    public override void MuisVast(SchetsControl s, Point p)
     {
-        verwijderObject(checkbounds(s, p));
+        GetekendObject obj = checkbounds(s, p);
+        if (obj != null)
+        {
+            pInBoundX = p.X - obj.beginpunt.X;
+            pInBoundY = p.Y - obj.beginpunt.Y;
+        }
+        
     }
 
-    private void verwijderObject(GetekendObject obj)
+    public override void MuisLos(SchetsControl s, Point p)
     {
-        if (obj != null) {
-            Debug.WriteLine(obj.soort.ToString());
+        GetekendObject obj = checkbounds(s, p);
+        if (obj != null)
+        {
+            int width = obj.eindpunt.X - obj.beginpunt.X;
+            int height = obj.eindpunt.Y - obj.beginpunt.Y;
+
+            
+
+            obj.beginpunt.X = p.X - pInBoundX;
+            obj.eindpunt.X = obj.beginpunt.X + width;
+            obj.beginpunt.Y = p.Y - pInBoundY;
+            obj.eindpunt.Y = obj.beginpunt.Y + height;
+            s.DrawBitmapFromList();
         }
     }
 }
