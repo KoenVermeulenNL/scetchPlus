@@ -66,7 +66,6 @@ public class SchetsControl : UserControl
 
         //CHANGED
     public void DrawBitmapFromList() {
-        Debug.WriteLine("schetscontrol");
         schets.Schoon();
         foreach (GetekendObject gObject in schets.getekendeObjecten)
         {
