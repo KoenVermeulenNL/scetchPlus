@@ -66,7 +66,6 @@ public class TekstTool : StartpuntTool
             string tekst = c.ToString();
             SizeF sz = gr.MeasureString(tekst, font, this.startpunt, StringFormat.GenericTypographic);
             gr.DrawString(tekst, font, new SolidBrush(kleur), this.startpunt, StringFormat.GenericTypographic);
-            // gr.DrawRectangle(Pens.Black, startpunt.X, startpunt.Y, sz.Width, sz.Height);
             if (!opened) {
                 s.schets.getekendeObjecten.Add(new GetekendObject(this, this.startpunt, new Point(this.startpunt.X + (int)sz.Width, this.startpunt.Y + (int)sz.Height), kleur, pengrootte, c.ToString()));
             }
@@ -192,7 +191,7 @@ public class LijnTool : TweepuntTool
         return afstandCirkel;
     }
 
-    public GetekendObject checkbounds(SchetsControl s, Point p)
+    public GetekendObject checkbounds(SchetsControl s, Point p, int threshold)
     {
         int x = p.X;
         int y = p.Y;
@@ -222,45 +221,47 @@ public class LijnTool : TweepuntTool
                     checkYeind = gobj.beginpunt.Y > gobj.penToolSegments[gobj.penToolSegments.Count - 1].eindpunt.Y ? gobj.beginpunt.Y : gobj.penToolSegments[gobj.penToolSegments.Count - 1].eindpunt.Y;
                 }
             }
-
-                if ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin && y <= checkYeind))
+            
+            if ((x >= checkXbegin-threshold && x <= checkXeind+threshold) && (y >= checkYbegin-threshold && y <= checkYeind+threshold))
             {
-                switch (gobj.soort.ToString()) {
-                    case "vlak": case "tekst":
-                        eindObject = gobj;
-                        break;
+                Debug.WriteLine("in");
+                if ( threshold == 0 ) {
+                    switch (gobj.soort.ToString()) {
+                        case "vlak": case "tekst":
+                            eindObject = gobj;
+                            break;
 
-                    case "kader":
-                        bool randlinks = ((x >= checkXbegin - gobj.lijndikte && x <= checkXbegin + gobj.lijndikte) && (y >= checkYbegin && y <= checkYeind));
-                        bool randrechts = ((x >= checkXeind - gobj.lijndikte && x <= checkXeind + gobj.lijndikte) && (y >= checkYbegin && y <= checkYeind));
-                        bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - gobj.lijndikte && y <= checkYbegin + gobj.lijndikte));
-                        bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - gobj.lijndikte && y <= checkYeind + gobj.lijndikte));
-                        if (randlinks || randrechts || randboven || randonder)
-                        {
+                        case "kader":
+                            bool randlinks = ((x >= checkXbegin - gobj.lijndikte && x <= checkXbegin + gobj.lijndikte) && (y >= checkYbegin && y <= checkYeind));
+                            bool randrechts = ((x >= checkXeind - gobj.lijndikte && x <= checkXeind + gobj.lijndikte) && (y >= checkYbegin && y <= checkYeind));
+                            bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - gobj.lijndikte && y <= checkYbegin + gobj.lijndikte));
+                            bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - gobj.lijndikte && y <= checkYeind + gobj.lijndikte));
+                            if (randlinks || randrechts || randboven || randonder)
+                            {
+                                eindObject = gobj;
+                            }
+                            break;
+                    
+                        case "rand":
+                            double afstandCirkelrand = afstandCirkel(x, y, (int)checkXbegin, (int)checkXeind, (int)checkYbegin, (int)checkYeind);
+                            if (afstandCirkelrand <= 1+(double)((double)gobj.lijndikte/100) && afstandCirkelrand >= 1-(double)((double)gobj.lijndikte/100))
+                            {
+                                eindObject = gobj;
+                            }
+                            break;
+                        case "cirkel":
+                            // formule voor ellipse:
+                            // (x-mx)^2/a^2 + (y-my)^2/b^2
+                            double AfstandCirkel = afstandCirkel(x, y, (int)checkXbegin, (int)checkXeind, (int)checkYbegin, (int)checkYeind);
+                            if (AfstandCirkel <= 1+(double)((double)gobj.lijndikte/100))
+                            {
+                                eindObject = gobj;
+                            }
+                        case "pen":
                             eindObject = gobj;
-                        }
-                        break;
-                
-                    case "rand":
-                        double afstandCirkelrand = afstandCirkel(x, y, (int)checkXbegin, (int)checkXeind, (int)checkYbegin, (int)checkYeind);
-                        if (afstandCirkelrand <= 1+(double)((double)gobj.lijndikte/100) && afstandCirkelrand >= 1-(double)((double)gobj.lijndikte/100))
-                        {
-                            eindObject = gobj;
-                        }
-                        break;
-                    case "cirkel":
-                        // formule voor ellipse:
-                        // (x-mx)^2/a^2 + (y-my)^2/b^2
-                        double AfstandCirkel = afstandCirkel(x, y, (int)checkXbegin, (int)checkXeind, (int)checkYbegin, (int)checkYeind);
-                        if (AfstandCirkel <= 1+(double)((double)gobj.lijndikte/100))
-                        {
-                            eindObject = gobj;
-                        }
-                        break;
-                    case "pen":
-                        eindObject = gobj;
-                        break;
-                }
+                            break;
+                    }
+                } else eindObject = gobj;
             }
         }
         return eindObject;
@@ -316,7 +317,7 @@ public class ObjectGumTool : PenTool
 
     public override void MuisLos(SchetsControl s, Point p)
     { 
-        verwijderObject(s, checkbounds(s, p));
+        verwijderObject(s, checkbounds(s, p, 0));
     }
 
     private void verwijderObject(SchetsControl s, GetekendObject obj)
@@ -344,7 +345,7 @@ public class MoveTool : PenTool
 
     public override void MuisVast(SchetsControl s, Point p)
     {
-        GetekendObject obj = checkbounds(s, p);
+        GetekendObject obj = checkbounds(s, p, 20);
         if (obj != null)
         {
             pInBoundX = p.X - obj.beginpunt.X;
@@ -357,7 +358,7 @@ public class MoveTool : PenTool
 
     public override void MuisLos(SchetsControl s, Point p)
     {
-        GetekendObject obj = checkbounds(s, p);
+        GetekendObject obj = checkbounds(s, p, 20);
         if (obj != null)
         {
             int width = obj.eindpunt.X - obj.beginpunt.X;
