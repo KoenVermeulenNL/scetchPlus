@@ -11,8 +11,9 @@ public interface ISchetsTool
     void MuisVast(SchetsControl s, Point p);
     void MuisDrag(SchetsControl s, Point p);
     void MuisLos(SchetsControl s, Point p);
-    void Letter(SchetsControl s, char c);
+    void Letter(SchetsControl s, char c, Color kleur, bool opened);
     void Teken(SchetsControl s, Point start, Point end, Color kleur, int pendikte);
+    void veranderStartpunt(Point p);
 }
 
 public abstract class StartpuntTool : ISchetsTool
@@ -28,7 +29,6 @@ public abstract class StartpuntTool : ISchetsTool
     }
     public virtual void MuisLos(SchetsControl s, Point p)
     {
-        Debug.WriteLine(color.IsEmpty);
         kwast = new SolidBrush(s.PenKleur);
         if (!color.IsEmpty) {
             kwast = new SolidBrush(color);
@@ -43,9 +43,11 @@ public abstract class StartpuntTool : ISchetsTool
 
     }
     public abstract void MuisDrag(SchetsControl s, Point p);
-    public abstract void Letter(SchetsControl s, char c);
+    public abstract void Letter(SchetsControl s, char c, Color Kleur, bool opened);
 
     public virtual void Teken(SchetsControl s, Point start, Point end, Color kleur, int pendikte) {  }
+    
+    public abstract void veranderStartpunt(Point p);
 }
 
 public class TekstTool : StartpuntTool
@@ -54,23 +56,29 @@ public class TekstTool : StartpuntTool
 
     public override void MuisDrag(SchetsControl s, Point p) { }
 
-    public override void Letter(SchetsControl s, char c)
+    public override void Letter(SchetsControl s, char c, Color kleur, bool opened)
     {
-        if (c >= 32)
+        if (c >= 31)
         {
             Graphics gr = s.MaakBitmapGraphics();
             Font font = new Font("Tahoma", 40);
             string tekst = c.ToString();
-            SizeF sz = 
-            gr.MeasureString(tekst, font, this.startpunt, StringFormat.GenericTypographic);
-            gr.DrawString   (tekst, font, kwast, 
-                                            this.startpunt, StringFormat.GenericTypographic);
+            SizeF sz = gr.MeasureString(tekst, font, this.startpunt, StringFormat.GenericTypographic);
+            gr.DrawString(tekst, font, new SolidBrush(kleur), this.startpunt, StringFormat.GenericTypographic);
             // gr.DrawRectangle(Pens.Black, startpunt.X, startpunt.Y, sz.Width, sz.Height);
+            if (!opened) {
+                s.schets.getekendeObjecten.Add(new GetekendObject(this, this.startpunt, new Point(this.startpunt.X + (int)sz.Width, this.startpunt.Y + (int)sz.Height), kleur, pengrootte, c.ToString()));
+            }
             startpunt.X += (int)sz.Width;
             s.Invalidate();
         }
     }
     public override void Teken(SchetsControl s, Point start, Point end, Color kleur, int pendikte) { }
+
+    public override void veranderStartpunt(Point p)
+    {
+        startpunt = p;
+    }
 }
 
 public abstract class TweepuntTool : StartpuntTool
@@ -99,7 +107,7 @@ public abstract class TweepuntTool : StartpuntTool
         base.MuisLos(s, p);
         this.Compleet(s.MaakBitmapGraphics(), this.startpunt, p);
         s.Invalidate();
-        s.schets.getekendeObjecten.Add(new GetekendObject(this, this.startpunt, p, ((SolidBrush)kwast).Color, pengrootte));
+        s.schets.getekendeObjecten.Add(new GetekendObject(this, this.startpunt, p, ((SolidBrush)kwast).Color, pengrootte, ""));
     }
     public override void Teken(SchetsControl s, Point start, Point end, Color kleur, int pendikte) {
         color = kleur;
@@ -108,7 +116,7 @@ public abstract class TweepuntTool : StartpuntTool
         this.Compleet(s.MaakBitmapGraphics(), start, end);
         s.Invalidate();
     }
-    public override void Letter(SchetsControl s, char c)
+    public override void Letter(SchetsControl s, char c, Color kleur, bool opened)
     {
     }
     public abstract void Bezig(Graphics g, Point p1, Point p2);
@@ -124,6 +132,9 @@ public class RechthoekTool : TweepuntTool
 
     public override void Bezig(Graphics g, Point p1, Point p2)
     {   g.DrawRectangle(MaakPen(kwast,pengrootte), TweepuntTool.Punten2Rechthoek(p1, p2));
+    }
+    public override void veranderStartpunt(Point p)
+    {
     }
 }
     
@@ -145,6 +156,8 @@ public class CirkelTool : TweepuntTool
     {
         g.DrawEllipse(MaakPen(kwast, pengrootte), TweepuntTool.Punten2Rechthoek(p1, p2));
     }
+    public override void veranderStartpunt(Point p)
+    {}
 }
 
 //CHANGED
@@ -161,19 +174,21 @@ public class VolCirkelTool : CirkelTool
 public class LijnTool : TweepuntTool
 {
     public override string ToString() { return "lijn"; }
+    public override void veranderStartpunt(Point p) {
+
+    }
 
     public override void Bezig(Graphics g, Point p1, Point p2)
     {   g.DrawLine(MaakPen(this.kwast, pengrootte), p1, p2);
     }
-}
 
-public class PenTool : LijnTool
-{
-    public override string ToString() { return "pen"; }
-
-    public override void MuisDrag(SchetsControl s, Point p)
-    {   this.MuisLos(s, p);
-        this.MuisVast(s, p);
+    public double afstandCirkel(int x, int y, int bX, int eX, int bY, int eY) {
+        double a = (eX - bX)/2;
+        double b = (eY - bY)/2;
+        double mX = bX + a;
+        double mY = bY + b;
+        double afstandCirkel = ((x-mX)*(x-mX))/(a*a) + ((y-mY)*(y-mY))/(b*b);
+        return afstandCirkel;
     }
 
     public GetekendObject checkbounds(SchetsControl s, Point p)
@@ -191,14 +206,8 @@ public class PenTool : LijnTool
             // niks met bounding te maken
             if (gobj.soort.ToString() == "lijn")
             {
-                int x0 = x;
-                int y0 = y;
-                int x1 = gobj.beginpunt.X;
-                int y1 = gobj.beginpunt.Y;
-                int x2 = gobj.eindpunt.X;
-                int y2 = gobj.eindpunt.Y;
-                double afstand = (Math.Abs((x2 - x1) * (y1 - y0) - (x1 - x0) * (y2 - y1))) / (Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)));
-                if (afstand <= 2 && afstand >= -2)
+                double afstand = (Math.Abs((gobj.eindpunt.X - gobj.beginpunt.X) * (gobj.beginpunt.Y - y) - (gobj.beginpunt.X - x) * (gobj.eindpunt.Y - gobj.beginpunt.Y))) / (Math.Sqrt((gobj.eindpunt.X - gobj.beginpunt.X) * (gobj.eindpunt.X - gobj.beginpunt.X) + (gobj.eindpunt.Y - gobj.beginpunt.Y) * (gobj.eindpunt.Y - gobj.beginpunt.Y)));
+                if (afstand <= gobj.lijndikte && afstand >= -1*gobj.lijndikte)
                 {
                     eindObject = gobj;
                 }
@@ -207,15 +216,15 @@ public class PenTool : LijnTool
             if ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin && y <= checkYeind))
             {
                 switch (gobj.soort.ToString()) {
-                    case "vlak":
+                    case "vlak": case "tekst":
                         eindObject = gobj;
                         break;
 
                     case "kader":
-                        bool randlinks = ((x >= checkXbegin - 5 && x <= checkXbegin + 5) && (y >= checkYbegin && y <= checkYeind));
-                        bool randrechts = ((x >= checkXeind - 5 && x <= checkXeind + 5) && (y >= checkYbegin && y <= checkYeind));
-                        bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - 5 && y <= checkYbegin + 5));
-                        bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - 5 && y <= checkYeind + 5));
+                        bool randlinks = ((x >= checkXbegin - gobj.lijndikte && x <= checkXbegin + gobj.lijndikte) && (y >= checkYbegin && y <= checkYeind));
+                        bool randrechts = ((x >= checkXeind - gobj.lijndikte && x <= checkXeind + gobj.lijndikte) && (y >= checkYbegin && y <= checkYeind));
+                        bool randboven = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin - gobj.lijndikte && y <= checkYbegin + gobj.lijndikte));
+                        bool randonder = ((x >= checkXbegin && x <= checkXeind) && (y >= checkYeind - gobj.lijndikte && y <= checkYeind + gobj.lijndikte));
                         if (randlinks || randrechts || randboven || randonder)
                         {
                             eindObject = gobj;
@@ -223,34 +232,17 @@ public class PenTool : LijnTool
                         break;
                 
                     case "rand":
-                        int beginXrand = (int)checkXbegin;
-                        int eindXrand = (int)checkXeind;
-                        int beginYrand = (int)checkYbegin;
-                        int eindYrand = (int)checkYeind;
-                        double arand = (eindXrand - beginXrand)/2;
-                        double brand = (eindYrand - beginYrand)/2;
-                        double mXrand = beginXrand + arand;
-                        double mYrand = beginYrand + brand;
-                        double afstandCirkelrand = ((x-mXrand)*(x-mXrand))/(arand*arand) + ((y-mYrand)*(y-mYrand))/(brand*brand);
-                        if (afstandCirkelrand <= 1.05 && afstandCirkelrand >= 0.95)
+                        double afstandCirkelrand = afstandCirkel(x, y, (int)checkXbegin, (int)checkXeind, (int)checkYbegin, (int)checkYeind);
+                        if (afstandCirkelrand <= 1+(double)((double)gobj.lijndikte/100) && afstandCirkelrand >= 1-(double)((double)gobj.lijndikte/100))
                         {
                             eindObject = gobj;
                         }
                         break;
                     case "cirkel":
-                        // deze nog goedmaken voor ellipse
                         // formule voor ellipse:
                         // (x-mx)^2/a^2 + (y-my)^2/b^2
-                        int beginX = (int)checkXbegin;
-                        int eindX = (int)checkXeind;
-                        int beginY = (int)checkYbegin;
-                        int eindY = (int)checkYeind;
-                        double a = (eindX - beginX)/2;
-                        double b = (eindY - beginY)/2;
-                        double mX = beginX + a;
-                        double mY = beginY + b;
-                        double afstandCirkel = ((x-mX)*(x-mX))/(a*a) + ((y-mY)*(y-mY))/(b*b);
-                        if (afstandCirkel <= 1.05)
+                        double AfstandCirkel = afstandCirkel(x, y, (int)checkXbegin, (int)checkXeind, (int)checkYbegin, (int)checkYeind);
+                        if (AfstandCirkel <= 1+(double)((double)gobj.lijndikte/100))
                         {
                             eindObject = gobj;
                         }
@@ -260,6 +252,17 @@ public class PenTool : LijnTool
         }
         return eindObject;
     }
+}
+
+public class PenTool : LijnTool
+{
+    public override string ToString() { return "pen"; }
+
+    public override void MuisDrag(SchetsControl s, Point p)
+    {   this.MuisLos(s, p);
+        this.MuisVast(s, p);
+    }
+
 }
     
 public class GumTool : PenTool
