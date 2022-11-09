@@ -90,6 +90,28 @@ public class SchetsWin : Form
         this.maakActieButtons(deKleuren);
         this.Resize += this.veranderAfmeting;
         this.veranderAfmeting(null, null);
+        this.FormClosing += (obj, e) => {
+            if (schetscontrol.schets.savedGetekendeObjecten != schetscontrol.schets.getekendeObjecten) {
+            DialogResult result = MessageBox.Show("Do you want to save changes", "Confirmation", MessageBoxButtons.YesNoCancel);
+            if (result == DialogResult.Yes) {
+                DialogResult resultSaveObject = MessageBox.Show("Do you want to save this as an object", "Save", MessageBoxButtons.YesNoCancel);
+                if (resultSaveObject == DialogResult.Yes) {
+                    saveObject();
+                } else if (resultSaveObject == DialogResult.No) {
+                    save();
+                } else {
+                    e.Cancel = true;
+                }
+            } 
+            
+            else if (result == DialogResult.No) {
+                Close();
+            
+            } else {
+                e.Cancel = true;
+            }
+        }
+        };
     }
 
     private void maakFileMenu()
@@ -97,8 +119,8 @@ public class SchetsWin : Form
         ToolStripMenuItem menu = new ToolStripMenuItem("File");
         menu.MergeAction = MergeAction.MatchOnly;
         ToolStripMenuItem saveMenu = new ToolStripMenuItem("File");
-        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.save);
-        saveMenu.DropDownItems.Add("Opslaan als object...", null, this.saveObject);
+        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.saveClicked);
+        saveMenu.DropDownItems.Add("Opslaan als object...", null, this.saveObjectClicked);
         saveMenu.DropDownItems.Add("Openen...", null, this.open);
         saveMenu.DropDownItems.Add("Openen als object...", null, this.openObject);
         menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { saveMenu });
@@ -237,9 +259,12 @@ public class SchetsWin : Form
         schetscontrol.VeranderPenGrootte(trackbarValue);
     }
 
+    private void saveClicked(object sender, EventArgs e) {
+        save();
+    }
 
     //CHANGED
-    private void save(object sender, EventArgs e)
+    private void save()
     {
         SaveFileDialog dialog = new SaveFileDialog();
         dialog.Filter = "*png (*.png)|*.png|jpeg (*.jpeg)|*.jpeg";
@@ -265,7 +290,11 @@ public class SchetsWin : Form
 
     }
 
-    private void saveObject(object sender, EventArgs e)
+    private void saveObjectClicked(object sender, EventArgs e) {
+        saveObject();
+    }
+
+    private void saveObject()
     {
         SaveFileDialog dialog = new SaveFileDialog();
         dialog.Filter = "Text File | *.txt";
