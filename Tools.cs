@@ -257,6 +257,7 @@ public class LijnTool : TweepuntTool
                             {
                                 eindObject = gobj;
                             }
+                            break;
                         case "pen":
                             eindObject = gobj;
                             break;
