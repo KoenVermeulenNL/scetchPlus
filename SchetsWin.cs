@@ -274,7 +274,7 @@ public class SchetsWin : Form
             string res = ""; //; = seperator between objects
             foreach (GetekendObject obj in schetscontrol.schets.getekendeObjecten)
             {
-                res += $"{obj.soort.ToString()}~{obj.beginpunt.X}~{obj.beginpunt.Y}~{obj.eindpunt.X}~{obj.eindpunt.Y}~{obj.kleur.Name}~{obj.lijndikte}~{obj.c};";
+                res += $"{obj.soort.ToString()}~{obj.beginpunt.X}~{obj.beginpunt.Y}~{obj.eindpunt.X}~{obj.eindpunt.Y}~{obj.kleur.A}-{obj.kleur.R}-{obj.kleur.G}-{obj.kleur.B}~{obj.lijndikte}~{obj.c};";
             }
             StreamWriter writer = new StreamWriter(dialog.OpenFile());
 
@@ -316,11 +316,13 @@ public class SchetsWin : Form
                                     }
                                 }
 
+                            string[] rgbStrings = objectProps[5].Split("-");
+
                                 GetekendObject gObj = new GetekendObject(   
                                         tool,
                                         new Point(Int32.Parse(objectProps[1]), Int32.Parse(objectProps[2])),
                                         new Point(Int32.Parse(objectProps[3]), Int32.Parse(objectProps[4])),
-                                        Color.FromName(objectProps[5]), 
+                                        Color.FromArgb(Int32.Parse(rgbStrings[0]), Int32.Parse(rgbStrings[1]), Int32.Parse(rgbStrings[2]), Int32.Parse(rgbStrings[3])), 
                                         Int32.Parse(objectProps[6]),
                                         objectProps[7]
                                     );
