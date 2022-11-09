@@ -280,8 +280,10 @@ public class SchetsWin : Form
             foreach (GetekendObject obj in schetscontrol.schets.getekendeObjecten)
             {
                 string penToolSegments = "";
-                foreach (GetekendObject pTSegment in obj.penToolSegments) { 
-                    penToolSegments += CreateObjectString(pTSegment, "/") + "|";
+                if (obj.penToolSegments != null) {
+                    foreach (GetekendObject pTSegment in obj.penToolSegments) {
+                        penToolSegments += CreateObjectString(pTSegment, "/") + "|";
+                    }
                 }
                 res += CreateObjectString(obj) + $"~{penToolSegments};";
             }

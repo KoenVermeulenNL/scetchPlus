@@ -377,9 +377,13 @@ public class MoveTool : PenTool
                 int dX = pStartX.X - pInBoundX - obj.beginpunt.X;
                 int dY = pStartX.Y - pInBoundY - obj.beginpunt.Y;
 
-                foreach (GetekendObject pTSegment in obj.penToolSegments) {
-                    pTSegment.beginpunt = new Point(pTSegment.beginpunt.X - dX, pTSegment.beginpunt.Y - dY);
-                    pTSegment.eindpunt = new Point(pTSegment.eindpunt.X - dX, pTSegment.eindpunt.Y - dY);
+                if (obj.penToolSegments != null)
+                {
+                    foreach (GetekendObject pTSegment in obj.penToolSegments)
+                    {
+                        pTSegment.beginpunt = new Point(pTSegment.beginpunt.X - dX, pTSegment.beginpunt.Y - dY);
+                        pTSegment.eindpunt = new Point(pTSegment.eindpunt.X - dX, pTSegment.eindpunt.Y - dY);
+                    }
                 }
             }
 
