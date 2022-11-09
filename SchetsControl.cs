@@ -70,7 +70,6 @@ public class SchetsControl : UserControl
         foreach (GetekendObject gObject in schets.getekendeObjecten)
         {
             if (gObject.soort.ToString() == "tekst") {
-                Debug.WriteLine(gObject.c);
                 gObject.soort.veranderStartpunt(gObject.beginpunt);
                 gObject.soort.Letter(this, gObject.c.ToCharArray()[0], gObject.kleur, true);
             } else gObject.soort.Teken(this, gObject.beginpunt, gObject.eindpunt, gObject.kleur, gObject.lijndikte);
