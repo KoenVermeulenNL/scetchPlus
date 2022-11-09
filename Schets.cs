@@ -22,6 +22,7 @@ public class Schets
         public Color kleur;
         public int lijndikte;
         public string c = "";
+        public List<GetekendObject> penToolSegments { get; set; }
 
         public GetekendObject(ISchetsTool soort, Point beginpunt, Point eindpunt, Color kleur, int lijndikte, string c) {
             this.soort = soort;

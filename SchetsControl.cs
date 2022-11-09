@@ -69,10 +69,18 @@ public class SchetsControl : UserControl
         schets.Schoon();
         foreach (GetekendObject gObject in schets.getekendeObjecten)
         {
-            if (gObject.soort.ToString() == "tekst") {
+            if (gObject.soort.ToString() == "tekst")
+            {
                 gObject.soort.veranderStartpunt(gObject.beginpunt);
                 gObject.soort.Letter(this, gObject.c.ToCharArray()[0], gObject.kleur, true);
-            } else gObject.soort.Teken(this, gObject.beginpunt, gObject.eindpunt, gObject.kleur, gObject.lijndikte);
+            }
+            else if (gObject.soort.ToString() == "pen") {
+                gObject.soort.Teken(this, gObject.beginpunt, gObject.eindpunt, gObject.kleur, gObject.lijndikte);
+            
+            foreach (GetekendObject pTSegment in gObject.penToolSegments) {
+                    gObject.soort.Teken(this, pTSegment.beginpunt, pTSegment.eindpunt, pTSegment.kleur, pTSegment.lijndikte);
+                }            
+            } else { gObject.soort.Teken(this, gObject.beginpunt, gObject.eindpunt, gObject.kleur, gObject.lijndikte); }
         }
         this.Invalidate();
     }

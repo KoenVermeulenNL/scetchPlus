@@ -23,6 +23,7 @@ public abstract class StartpuntTool : ISchetsTool
     protected Color color;
     protected int pengrootte;
     protected int newPengrootte = 0;
+    protected List<GetekendObject> penObjecten;
 
     public virtual void MuisVast(SchetsControl s, Point p)
     {   startpunt = p;
@@ -212,8 +213,17 @@ public class LijnTool : TweepuntTool
                     eindObject = gobj;
                 }
             }
-            
-            if ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin && y <= checkYeind))
+
+            if (gobj.soort.ToString() == "pen")
+            {
+                if (gobj.penToolSegments.Count > 0)
+                {
+                    checkXeind = gobj.beginpunt.X > gobj.penToolSegments[gobj.penToolSegments.Count - 1].eindpunt.X ? gobj.beginpunt.X : gobj.penToolSegments[gobj.penToolSegments.Count - 1].eindpunt.X;
+                    checkYeind = gobj.beginpunt.Y > gobj.penToolSegments[gobj.penToolSegments.Count - 1].eindpunt.Y ? gobj.beginpunt.Y : gobj.penToolSegments[gobj.penToolSegments.Count - 1].eindpunt.Y;
+                }
+            }
+
+                if ((x >= checkXbegin && x <= checkXeind) && (y >= checkYbegin && y <= checkYeind))
             {
                 switch (gobj.soort.ToString()) {
                     case "vlak": case "tekst":
@@ -247,6 +257,9 @@ public class LijnTool : TweepuntTool
                             eindObject = gobj;
                         }
                         break;
+                    case "pen":
+                        eindObject = gobj;
+                        break;
                 }
             }
         }
@@ -258,11 +271,33 @@ public class PenTool : LijnTool
 {
     public override string ToString() { return "pen"; }
 
+    public override void MuisLos(SchetsControl s, Point p)
+    {
+        base.MuisLos(s, p);
+        var gOList = s.schets.getekendeObjecten;
+        if (gOList.Count > 1)
+        {
+            //Als het beginpunt en het eindpunt hetzelfde zijn is het nog steeds dezelfde pen
+            if (gOList[gOList.Count - 2].eindpunt == gOList[gOList.Count - 1].beginpunt || (gOList[gOList.Count - 2].penToolSegments.Count > 0 &&
+                gOList[gOList.Count - 1].beginpunt == gOList[gOList.Count - 2].penToolSegments[gOList[gOList.Count - 2].penToolSegments.Count - 1].eindpunt))
+            {
+                if (gOList[gOList.Count - 2].penToolSegments == null)
+                {
+                    gOList[gOList.Count - 2].penToolSegments = new List<GetekendObject>();
+                }
+
+                gOList[gOList.Count - 2].penToolSegments.Add(gOList[gOList.Count - 1]);
+                gOList.RemoveAt(gOList.Count - 1);
+            }
+            //Else: it is a new pen
+        }
+    }
     public override void MuisDrag(SchetsControl s, Point p)
     {   this.MuisLos(s, p);
         this.MuisVast(s, p);
+        
     }
-
+    
 }
     
 public class GumTool : PenTool
@@ -303,6 +338,10 @@ public class MoveTool : PenTool
     int pInBoundX = 0;
     int pInBoundY = 0;
 
+    int startX = 0;
+    int startY = 0;
+    Point pStartX;
+
     public override void MuisVast(SchetsControl s, Point p)
     {
         GetekendObject obj = checkbounds(s, p);
@@ -310,6 +349,8 @@ public class MoveTool : PenTool
         {
             pInBoundX = p.X - obj.beginpunt.X;
             pInBoundY = p.Y - obj.beginpunt.Y;
+
+            pStartX = p;
         }
         
     }
@@ -328,6 +369,18 @@ public class MoveTool : PenTool
             obj.eindpunt.X = obj.beginpunt.X + width;
             obj.beginpunt.Y = p.Y - pInBoundY;
             obj.eindpunt.Y = obj.beginpunt.Y + height;
+
+            if (obj.soort.ToString() == "pen")
+            {
+                int dX = pStartX.X - pInBoundX - obj.beginpunt.X;
+                int dY = pStartX.Y - pInBoundY - obj.beginpunt.Y;
+
+                foreach (GetekendObject pTSegment in obj.penToolSegments) {
+                    pTSegment.beginpunt = new Point(pTSegment.beginpunt.X - dX, pTSegment.beginpunt.Y - dY);
+                    pTSegment.eindpunt = new Point(pTSegment.eindpunt.X - dX, pTSegment.eindpunt.Y - dY);
+                }
+            }
+
             s.DrawBitmapFromList();
         }
     }

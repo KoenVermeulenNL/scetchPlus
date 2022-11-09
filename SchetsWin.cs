@@ -272,9 +272,18 @@ public class SchetsWin : Form
         if (dialog.ShowDialog() == DialogResult.OK)
         {
             string res = ""; //; = seperator between objects
+
+            string CreateObjectString(GetekendObject obj, string sperator = "~") {
+                return $"{obj.soort.ToString()}{sperator}{obj.beginpunt.X}{sperator}{obj.beginpunt.Y}{sperator}{obj.eindpunt.X}{sperator}{obj.eindpunt.Y}{sperator}{obj.kleur.A}-{obj.kleur.R}-{obj.kleur.G}-{obj.kleur.B}{sperator}{obj.lijndikte}{sperator}{obj.c}";
+            }
+
             foreach (GetekendObject obj in schetscontrol.schets.getekendeObjecten)
             {
-                res += $"{obj.soort.ToString()}~{obj.beginpunt.X}~{obj.beginpunt.Y}~{obj.eindpunt.X}~{obj.eindpunt.Y}~{obj.kleur.A}-{obj.kleur.R}-{obj.kleur.G}-{obj.kleur.B}~{obj.lijndikte}~{obj.c};";
+                string penToolSegments = "";
+                foreach (GetekendObject pTSegment in obj.penToolSegments) { 
+                    penToolSegments += CreateObjectString(pTSegment, "/") + "|";
+                }
+                res += CreateObjectString(obj) + $"~{penToolSegments};";
             }
             StreamWriter writer = new StreamWriter(dialog.OpenFile());
 
@@ -292,8 +301,8 @@ public class SchetsWin : Form
         dialog.Filter = "Text File | *.txt";
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-            // try
-            // {
+             try
+             {
                 // Create a StreamReader  
                 using (StreamReader reader = new StreamReader(dialog.FileName))
                 {
@@ -305,38 +314,62 @@ public class SchetsWin : Form
                         string fullLine = line;
                         string[] objectStrings = fullLine.Split(";");
                         foreach (string objectString in objectStrings) {
-                            string[] objectProps = objectString.Split("~");
-                            if (objectProps.Length > 1) { 
 
+                            GetekendObject CreateObjectFromStrings(string[] objectProps)
+                            {
                                 ISchetsTool tool = tempTools[0];
 
-                                foreach (ISchetsTool t in tempTools) {
-                                    if (t.ToString() == objectProps[0]) {
+                                foreach (ISchetsTool t in tempTools)
+                                {
+                                    if (t.ToString() == objectProps[0])
+                                    {
                                         tool = t;
                                     }
                                 }
 
-                            string[] rgbStrings = objectProps[5].Split("-");
+                                string[] rgbStrings = objectProps[5].Split("-");
 
-                                GetekendObject gObj = new GetekendObject(   
+                                return  new GetekendObject(
                                         tool,
                                         new Point(Int32.Parse(objectProps[1]), Int32.Parse(objectProps[2])),
                                         new Point(Int32.Parse(objectProps[3]), Int32.Parse(objectProps[4])),
-                                        Color.FromArgb(Int32.Parse(rgbStrings[0]), Int32.Parse(rgbStrings[1]), Int32.Parse(rgbStrings[2]), Int32.Parse(rgbStrings[3])), 
+                                        Color.FromArgb(Int32.Parse(rgbStrings[0]), Int32.Parse(rgbStrings[1]), Int32.Parse(rgbStrings[2]), Int32.Parse(rgbStrings[3])),
                                         Int32.Parse(objectProps[6]),
                                         objectProps[7]
                                     );
+                            }
+
+                            string[] objectProps = objectString.Split("~");
+                            if (objectProps.Length > 1) {
+
+                                GetekendObject gObj = CreateObjectFromStrings(objectProps);
                                 schetscontrol.schets.getekendeObjecten.Add(gObj);
+
+                                List<GetekendObject> penToolSegmentsPre = new List<GetekendObject>();
+
+                                string penToolSegmentsString = objectProps[8];
+                                string[] pTSStrings = penToolSegmentsString.Split("|");
+                                
+                                if (pTSStrings.Length > 0)
+                                {
+                                    for (int i = 0; i < pTSStrings.Length - 1; /*last one doesn't count*/ i++)
+                                    {
+                                        penToolSegmentsPre.Add(CreateObjectFromStrings(pTSStrings[i].Split("/")));
+                                    }
+                                }
+
+
+                                schetscontrol.schets.getekendeObjecten[schetscontrol.schets.getekendeObjecten.Count - 1].penToolSegments = penToolSegmentsPre;
                             }
                         }
                         schetscontrol.DrawBitmapFromList();
                     }
                 }
-            // }
-            // catch (Exception exp)
-            // {
-            //     MessageBox.Show(exp.Message);
-            // }
+             }
+             catch (Exception exp)
+             {
+                 MessageBox.Show(exp.Message);
+             }
         }
 
     }
