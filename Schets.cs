@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -22,14 +21,15 @@ public class Schets
         public Point eindpunt;
         public Color kleur;
         public int lijndikte;
-        public string tekst = "";
+        public string c = "";
 
-        public GetekendObject(ISchetsTool soort, Point beginpunt, Point eindpunt, Color kleur, int lijndikte) {
+        public GetekendObject(ISchetsTool soort, Point beginpunt, Point eindpunt, Color kleur, int lijndikte, string c) {
             this.soort = soort;
             this.beginpunt = beginpunt;
             this.eindpunt = eindpunt;
             this.kleur = kleur;
             this.lijndikte = lijndikte;
+            this.c = c;
         }
     }
 

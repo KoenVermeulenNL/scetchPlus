@@ -76,7 +76,7 @@ public class SchetsWin : Form
                                         vast = false;
                                     };
         schetscontrol.KeyPress +=  (object o, KeyPressEventArgs kpea) => 
-                                    {   huidigeTool.Letter  (schetscontrol, kpea.KeyChar); 
+                                    {   huidigeTool.Letter  (schetscontrol, kpea.KeyChar, kleurKiezen.BackColor, false); 
                                     };
         this.Controls.Add(schetscontrol);
 
@@ -227,7 +227,6 @@ public class SchetsWin : Form
     }
 
     private void veranderPenGrootte(object sender, EventArgs e) {
-        Debug.WriteLine(((TrackBar)sender).Value);
         int trackbarValue = ((TrackBar)sender).Value * 2;
         Graphics g = Graphics.FromImage(penGrootteBitmap);
         Brush kleur = new SolidBrush(kleurKiezen.BackColor);
@@ -275,7 +274,7 @@ public class SchetsWin : Form
             string res = ""; //; = seperator between objects
             foreach (GetekendObject obj in schetscontrol.schets.getekendeObjecten)
             {
-                res += $"{obj.soort.ToString()}~{obj.beginpunt.X}~{obj.beginpunt.Y}~{obj.eindpunt.X}~{obj.eindpunt.Y}~{obj.kleur.Name}~{obj.lijndikte};";
+                res += $"{obj.soort.ToString()}~{obj.beginpunt.X}~{obj.beginpunt.Y}~{obj.eindpunt.X}~{obj.eindpunt.Y}~{obj.kleur.Name}~{obj.lijndikte}~{obj.c};";
             }
             StreamWriter writer = new StreamWriter(dialog.OpenFile());
 
@@ -293,8 +292,8 @@ public class SchetsWin : Form
         dialog.Filter = "Text File | *.txt";
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-            try
-            {
+            // try
+            // {
                 // Create a StreamReader  
                 using (StreamReader reader = new StreamReader(dialog.FileName))
                 {
@@ -307,34 +306,35 @@ public class SchetsWin : Form
                         string[] objectStrings = fullLine.Split(";");
                         foreach (string objectString in objectStrings) {
                             string[] objectProps = objectString.Split("~");
-                        if (objectProps.Length > 1) { 
+                            if (objectProps.Length > 1) { 
 
-                            ISchetsTool tool = tempTools[0];
+                                ISchetsTool tool = tempTools[0];
 
-                            foreach (ISchetsTool t in tempTools) {
-                                if (t.ToString() == objectProps[0]) {
-                                    tool = t;
+                                foreach (ISchetsTool t in tempTools) {
+                                    if (t.ToString() == objectProps[0]) {
+                                        tool = t;
+                                    }
                                 }
+
+                                GetekendObject gObj = new GetekendObject(   
+                                        tool,
+                                        new Point(Int32.Parse(objectProps[1]), Int32.Parse(objectProps[2])),
+                                        new Point(Int32.Parse(objectProps[3]), Int32.Parse(objectProps[4])),
+                                        Color.FromName(objectProps[5]), 
+                                        Int32.Parse(objectProps[6]),
+                                        objectProps[7]
+                                    );
+                                schetscontrol.schets.getekendeObjecten.Add(gObj);
                             }
-
-
-                            GetekendObject gObj = new GetekendObject(tool,
-                                new Point(Int32.Parse(objectProps[1]), Int32.Parse(objectProps[2])),
-                                new Point(Int32.Parse(objectProps[3]), Int32.Parse(objectProps[4])),
-                                 Color.FromName(objectProps[5]), Int32.Parse(objectProps[6]));
-                            
-                            schetscontrol.schets.getekendeObjecten.Add(gObj);
                         }
+                        schetscontrol.DrawBitmapFromList();
                     }
-                    }
-
-                    schetscontrol.DrawBitmapFromList();
                 }
-            }
-            catch (Exception exp)
-            {
-                MessageBox.Show(exp.Message);
-            }
+            // }
+            // catch (Exception exp)
+            // {
+            //     MessageBox.Show(exp.Message);
+            // }
         }
 
     }
