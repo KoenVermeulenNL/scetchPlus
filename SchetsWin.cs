@@ -389,6 +389,7 @@ public class SchetsWin : Form
                             }
                         }
                         schetscontrol.DrawBitmapFromList();
+                        schetscontrol.schets.savedGetekendeObjecten = schetscontrol.schets.getekendeObjecten;
                     }
                 }
              }
