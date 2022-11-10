@@ -280,8 +280,8 @@ public class PenTool : LijnTool
         if (gOList.Count > 1)
         {
             //Als het beginpunt en het eindpunt hetzelfde zijn is het nog steeds dezelfde pen
-            if (gOList[gOList.Count - 2].eindpunt == gOList[gOList.Count - 1].beginpunt || (gOList[gOList.Count - 2].penToolSegments.Count > 0 &&
-                gOList[gOList.Count - 1].beginpunt == gOList[gOList.Count - 2].penToolSegments[gOList[gOList.Count - 2].penToolSegments.Count - 1].eindpunt))
+            if (gOList[gOList.Count - 2].soort.ToString() == "pen" && (gOList[gOList.Count - 2].eindpunt == gOList[gOList.Count - 1].beginpunt || (gOList[gOList.Count - 2].penToolSegments.Count > 0 &&
+                gOList[gOList.Count - 1].beginpunt == gOList[gOList.Count - 2].penToolSegments[gOList[gOList.Count - 2].penToolSegments.Count - 1].eindpunt)))
             {
                 if (gOList[gOList.Count - 2].penToolSegments == null)
                 {
