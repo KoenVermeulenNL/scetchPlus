@@ -90,27 +90,22 @@ public class SchetsWin : Form
         this.maakActieButtons(deKleuren);
         this.Resize += this.veranderAfmeting;
         this.veranderAfmeting(null, null);
-        this.FormClosing += (obj, e) => {
+        this.FormClosing += (object obj, FormClosingEventArgs e) => {
             if (schetscontrol.schets.savedGetekendeObjecten != schetscontrol.schets.getekendeObjecten) {
-            DialogResult result = MessageBox.Show("Do you want to save changes", "Confirmation", MessageBoxButtons.YesNoCancel);
-            if (result == DialogResult.Yes) {
-                DialogResult resultSaveObject = MessageBox.Show("Do you want to save this as an object", "Save", MessageBoxButtons.YesNoCancel);
-                if (resultSaveObject == DialogResult.Yes) {
-                    saveObject();
-                } else if (resultSaveObject == DialogResult.No) {
-                    save();
-                } else {
-                    e.Cancel = true;
-                }
-            } 
-            
-            else if (result == DialogResult.No) {
-                Close();
-            
-            } else {
-                e.Cancel = true;
+                DialogResult result = MessageBox.Show("Do you want to save changes", "Confirmation", MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Yes) {
+                    DialogResult resultSaveObject = MessageBox.Show("Do you want to save this as an object", "Save", MessageBoxButtons.YesNoCancel);
+                    if (resultSaveObject == DialogResult.Yes) {
+                        saveObject();
+                    } else if (resultSaveObject == DialogResult.No) {
+                        save();
+                    } else {
+                        e.Cancel = true;
+                    }
+                } else if (result == DialogResult.No) {
+                    e.Cancel = false;
+                } else e.Cancel = true;
             }
-        }
         };
     }
 
