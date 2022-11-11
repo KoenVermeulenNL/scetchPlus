@@ -161,10 +161,11 @@ public class SchetsWin : Form
         {
             RadioButton b = new RadioButton();
             b.Appearance = Appearance.Button;
-            b.Size = new Size(45, 62);
-            b.Location = new Point(10, 10 + t * 62);
+            b.Size = new Size(45, 45);
+            b.Location = new Point(10, 10 + t * 45);
             b.Tag = tool;
-            b.Text = tool.ToString();
+            b.ImageAlign = ContentAlignment.TopCenter;
+            // b.Text = tool.ToString();
             try {
                 b.Image = new Bitmap($"../../../Icons/{tool.ToString()}.png");
             } catch {
@@ -216,7 +217,7 @@ public class SchetsWin : Form
         penGrootteTekst.Location = new Point(460, 0);
 
         penGrootteLabel = new Label(); paneel.Controls.Add(penGrootteLabel);
-        penGrootteLabel.Location = new Point(520, 0);
+        penGrootteLabel.Location = new Point(620, 0);
         penGrootteLabel.Size = new Size(30, 30);
         penGrootteLabel.BackColor = Color.Transparent;
         penGrootteBitmap = new Bitmap(30, 30);
