@@ -331,6 +331,25 @@ public class ObjectGumTool : PenTool
     }
 }
 
+public class Bovenop : PenTool
+{
+    public override string ToString()
+    {
+        return "bovenop";
+    }
+
+    public override void MuisLos(SchetsControl s, Point p)
+    {
+        GetekendObject obj = checkbounds(s, p, 0);
+        int indexObject = s.schets.getekendeObjecten.IndexOf(obj);
+        int lastIndex = s.schets.getekendeObjecten.Count - 1;
+        if (indexObject != -1) {
+            s.schets.getekendeObjecten[indexObject] = s.schets.getekendeObjecten[lastIndex];
+            s.schets.getekendeObjecten[lastIndex] = s.schets.getekendeObjecten[indexObject];
+        }
+    }
+}
+
 public class MoveTool : PenTool
 {
     //Weet niet of dit de aanpak is...

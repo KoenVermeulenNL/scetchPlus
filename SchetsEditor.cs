@@ -18,6 +18,7 @@ public class SchetsEditor : Form
         this.Text = "Schets editor";
         this.IsMdiContainer = true;
         this.MainMenuStrip = menuStrip;
+        this.WindowState = FormWindowState.Maximized;
     }
     private void maakFileMenu()
     {   

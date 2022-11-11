@@ -28,13 +28,15 @@ public class SchetsWin : Form
                                 , new ObjectGumTool()
                                 , new MoveTool()
                                 , new GumTool()
+                                , new Bovenop()
                                 };
 
     private void veranderAfmeting(object o, EventArgs ea)
     {
-        schetscontrol.Size = new Size ( this.ClientSize.Width  - 70
+        schetscontrol.Size = new Size ( this.ClientSize.Width
                                       , this.ClientSize.Height - 50);
         paneel.Location = new Point(64, this.ClientSize.Height - 30);
+        paneel.Size = new Size(this.ClientSize.Width, 24);
     }
 
     private void klikToolMenu(object obj, EventArgs ea)
@@ -80,6 +82,7 @@ public class SchetsWin : Form
                                     };
         this.Controls.Add(schetscontrol);
 
+        this.WindowState = FormWindowState.Maximized;
         menuStrip = new MenuStrip();
         menuStrip.Visible = false;
         this.Controls.Add(menuStrip);
@@ -179,7 +182,7 @@ public class SchetsWin : Form
     private void maakActieButtons(String[] kleuren)
     {
         paneel = new Panel(); this.Controls.Add(paneel);
-        paneel.Size = new Size(600, 24);
+        paneel.Size = new Size(this.ClientSize.Width, 24);
 
         Button clear = new Button(); paneel.Controls.Add(clear);
         clear.Text = "Clear";
