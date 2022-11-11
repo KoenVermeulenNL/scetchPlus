@@ -28,13 +28,15 @@ public class SchetsWin : Form
                                 , new ObjectGumTool()
                                 , new MoveTool()
                                 , new GumTool()
+                                , new Bovenop()
                                 };
 
     private void veranderAfmeting(object o, EventArgs ea)
     {
-        schetscontrol.Size = new Size ( this.ClientSize.Width  - 70
+        schetscontrol.Size = new Size ( this.ClientSize.Width
                                       , this.ClientSize.Height - 50);
         paneel.Location = new Point(64, this.ClientSize.Height - 30);
+        paneel.Size = new Size(this.ClientSize.Width, 24);
     }
 
     private void klikToolMenu(object obj, EventArgs ea)
@@ -80,6 +82,7 @@ public class SchetsWin : Form
                                     };
         this.Controls.Add(schetscontrol);
 
+        this.WindowState = FormWindowState.Maximized;
         menuStrip = new MenuStrip();
         menuStrip.Visible = false;
         this.Controls.Add(menuStrip);
@@ -98,7 +101,7 @@ public class SchetsWin : Form
                     if (resultSaveObject == DialogResult.Yes) {
                         saveObject();
                     } else if (resultSaveObject == DialogResult.No) {
-                        save();
+                        save(null, null);
                     } else {
                         e.Cancel = true;
                     }
@@ -114,7 +117,7 @@ public class SchetsWin : Form
         ToolStripMenuItem menu = new ToolStripMenuItem("File");
         menu.MergeAction = MergeAction.MatchOnly;
         ToolStripMenuItem saveMenu = new ToolStripMenuItem("File");
-        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.saveClicked);
+        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.save);
         saveMenu.DropDownItems.Add("Opslaan als object...", null, this.saveObjectClicked);
         saveMenu.DropDownItems.Add("Openen...", null, this.open);
         saveMenu.DropDownItems.Add("Openen als object...", null, this.openObject);
@@ -158,10 +161,11 @@ public class SchetsWin : Form
         {
             RadioButton b = new RadioButton();
             b.Appearance = Appearance.Button;
-            b.Size = new Size(45, 62);
-            b.Location = new Point(10, 10 + t * 62);
+            b.Size = new Size(45, 45);
+            b.Location = new Point(10, 10 + t * 45);
             b.Tag = tool;
-            b.Text = tool.ToString();
+            b.ImageAlign = ContentAlignment.TopCenter;
+            // b.Text = tool.ToString();
             try {
                 b.Image = new Bitmap($"../../../Icons/{tool.ToString()}.png");
             } catch {
@@ -179,7 +183,7 @@ public class SchetsWin : Form
     private void maakActieButtons(String[] kleuren)
     {
         paneel = new Panel(); this.Controls.Add(paneel);
-        paneel.Size = new Size(600, 24);
+        paneel.Size = new Size(this.ClientSize.Width, 24);
 
         Button clear = new Button(); paneel.Controls.Add(clear);
         clear.Text = "Clear";
@@ -213,7 +217,7 @@ public class SchetsWin : Form
         penGrootteTekst.Location = new Point(460, 0);
 
         penGrootteLabel = new Label(); paneel.Controls.Add(penGrootteLabel);
-        penGrootteLabel.Location = new Point(520, 0);
+        penGrootteLabel.Location = new Point(620, 0);
         penGrootteLabel.Size = new Size(30, 30);
         penGrootteLabel.BackColor = Color.Transparent;
         penGrootteBitmap = new Bitmap(30, 30);
@@ -254,12 +258,8 @@ public class SchetsWin : Form
         schetscontrol.VeranderPenGrootte(trackbarValue);
     }
 
-    private void saveClicked(object sender, EventArgs e) {
-        save();
-    }
-
     //CHANGED
-    private void save()
+    private void save(object sender, EventArgs e)
     {
         SaveFileDialog dialog = new SaveFileDialog();
         dialog.Filter = "*png (*.png)|*.png|jpeg (*.jpeg)|*.jpeg";

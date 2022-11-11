@@ -331,6 +331,23 @@ public class ObjectGumTool : PenTool
     }
 }
 
+public class Bovenop : PenTool
+{
+    public override string ToString()
+    {
+        return "bovenop";
+    }
+
+    public override void MuisLos(SchetsControl s, Point p)
+    {
+        GetekendObject obj = checkbounds(s, p, 0);
+        s.schets.getekendeObjecten.Remove(obj);
+        s.schets.getekendeObjecten.Add(obj);
+
+        s.DrawBitmapFromList();
+    }
+}
+
 public class MoveTool : PenTool
 {
     //Weet niet of dit de aanpak is...
