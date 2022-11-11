@@ -341,12 +341,10 @@ public class Bovenop : PenTool
     public override void MuisLos(SchetsControl s, Point p)
     {
         GetekendObject obj = checkbounds(s, p, 0);
-        int indexObject = s.schets.getekendeObjecten.IndexOf(obj);
-        int lastIndex = s.schets.getekendeObjecten.Count - 1;
-        if (indexObject != -1) {
-            s.schets.getekendeObjecten[indexObject] = s.schets.getekendeObjecten[lastIndex];
-            s.schets.getekendeObjecten[lastIndex] = s.schets.getekendeObjecten[indexObject];
-        }
+        s.schets.getekendeObjecten.Remove(obj);
+        s.schets.getekendeObjecten.Add(obj);
+
+        s.DrawBitmapFromList();
     }
 }
 
