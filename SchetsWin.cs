@@ -101,7 +101,7 @@ public class SchetsWin : Form
                     if (resultSaveObject == DialogResult.Yes) {
                         saveObject();
                     } else if (resultSaveObject == DialogResult.No) {
-                        save();
+                        save(null, null);
                     } else {
                         e.Cancel = true;
                     }
@@ -117,7 +117,7 @@ public class SchetsWin : Form
         ToolStripMenuItem menu = new ToolStripMenuItem("File");
         menu.MergeAction = MergeAction.MatchOnly;
         ToolStripMenuItem saveMenu = new ToolStripMenuItem("File");
-        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.saveClicked);
+        saveMenu.DropDownItems.Add("Opslaan als afbeelding...", null, this.save);
         saveMenu.DropDownItems.Add("Opslaan als object...", null, this.saveObjectClicked);
         saveMenu.DropDownItems.Add("Openen...", null, this.open);
         saveMenu.DropDownItems.Add("Openen als object...", null, this.openObject);
@@ -258,12 +258,8 @@ public class SchetsWin : Form
         schetscontrol.VeranderPenGrootte(trackbarValue);
     }
 
-    private void saveClicked(object sender, EventArgs e) {
-        save();
-    }
-
     //CHANGED
-    private void save()
+    private void save(object sender, EventArgs e)
     {
         SaveFileDialog dialog = new SaveFileDialog();
         dialog.Filter = "*png (*.png)|*.png|jpeg (*.jpeg)|*.jpeg";
